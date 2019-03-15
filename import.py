@@ -1,0 +1,34 @@
+import sqlite3
+import sys
+from datetime import datetime
+
+"""
+    THIS OVERWRITES DATABASE
+"""
+
+if __name__ == '__main__':
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute('DROP TABLE IF EXISTS Matches')
+        cur.execute('CREATE TABLE Matches (red TEXT, blue TEXT, winner TEXT, tier TEXT, time INTEGER, mode TEXT, '
+                    'red_betters INTEGER, blue_betters INTEGER, red_bet INTEGER, blue_bet INTEGER, red_odds REAL, '
+                    'blue_odds REAL, date DATE)')
+        skip = 0
+        with open(sys.argv[1], 'rb') as file:
+            for row in file.readlines():
+                try:
+                    data = row.decode('ascii', errors='ignore').replace('\r\n', '').split(',')
+                    odds = data[7].split(':')
+                    cur.execute('INSERT INTO Matches (red, blue, winner, tier, mode, red_odds, blue_odds, time, date) '
+                                'VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )',
+                                (data[0], data[1], data[0] if data[2] == 0 else data[1], data[5], data[6], data[8],
+                                 odds[0], odds[1], datetime.strptime(data[-1][:10], '%d-%m-%Y')))
+                except IndexError:
+                    skip += 1
+
+        conn.commit()
+        conn.close()
+        print('Import Successful ({} skipped)'.format(skip))
+    except IndexError:
+        print('Import file not provided')
