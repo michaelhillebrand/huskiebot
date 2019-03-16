@@ -13,7 +13,7 @@ class HuskieBot(discord.Client):
 
     def __init__(self, *, loop=None, **options):
         self.scraper = Scraper(self)
-        self.salt_channel = None
+        self.salt_channel = Channel(**{'id': '555186709772501013', 'server': Server(**{'id': '100708750096080896'})})
         super().__init__(loop=loop, **options)
 
     def send_to_salt(self, message):
@@ -24,7 +24,6 @@ class HuskieBot(discord.Client):
         print(self.user.name)
         print(self.user.id)
         print('------')
-        self.salt_channel = Channel(**{'id': '555186709772501013', 'server': Server(**{'id': '100708750096080896'})})
 
     async def on_message(self, message):
 
