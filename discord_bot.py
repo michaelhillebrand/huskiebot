@@ -20,16 +20,32 @@ class HuskieBot(discord.Client):
         self.loop.create_task(self.send_message(self.salt_channel, message))
 
     async def on_ready(self):
-        print('Logged in as')
-        print(self.user.name)
-        print(self.user.id)
-        print('------')
+        message = '////////////////////\n' \
+                  '/                  /\n' \
+                  '/                  /\n' \
+                  '/                  /\n' \
+                  '/     HuskieBot    /\n' \
+                  '/    Initialized   /\n' \
+                  '/                  /\n' \
+                  '/                  /\n' \
+                  '////////////////////\n\n' \
+                  'For a list of available commands, type !commands'
+        self.send_to_salt(message)
 
     async def on_message(self, message):
 
         # we do not want the bot to reply to itself
         if message.author == self.user:
             return
+
+        elif message.content.startswith('!commands'):
+            await self.send_message(message.channel,
+                                    'status\t\t- Display status of HuskieBot\n'
+                                    'learn\t\t- Starts HuskieBot\'s learning algorithm '
+                                    '(This will disable most commands while it is running\n'
+                                    'stoplearn\t\t- Stops HUskieBot\'s learning\n'
+                                    'mute\t\t- Stops HuskieBot from posting stats about the matches'
+                                    )
 
         elif message.content.startswith('!status'):
             await self.send_message(message.channel, 'Learning: {}'.format(mutex.locked()))
