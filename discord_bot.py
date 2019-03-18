@@ -23,7 +23,6 @@ class HuskieBot(discord.Client):
 
     async def on_ready(self):
         await self.change_presence(game=discord.Game(name='Salty Bet'))
-        self.scraper = Scraper(self)
         self.doc_bop = self.get_server('100708750096080896')
         self.salt_channel = self.doc_bop.get_channel('555186709772501013')
         self.will = self.doc_bop.get_member_named('ARDelta#9051')

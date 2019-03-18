@@ -9,6 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from tzlocal import get_localzone
 
+from models import Match
+
 
 class Scraper(object):
     ALERT_TOURNAMENT = 10
@@ -38,8 +40,8 @@ class Scraper(object):
         if self.stop_scrape:
             raise KeyboardInterrupt
         try:
-            status = driver.find_element_by_id("status").text
-            if status != self.previous_status:
+            status = re.sub(r'[^\x00-\x7F]+', '', driver.find_element_by_id("status").text.strip())
+            if status and status != self.previous_status:
                 self.previous_status = status
                 return True
             else:
@@ -92,10 +94,10 @@ class Scraper(object):
             self.salty_driver.get("http://www.saltybet.com/")
             while True:
                 wait.until(self._is_changed)
-                status = self.previous_status.strip()
-                alert = self.salty_driver.find_element_by_id("footer-alert").text.strip()
+                status = self.previous_status
                 self.salty_driver.implicitly_wait(1)
                 time.sleep(1)
+                alert = self.salty_driver.find_element_by_id("footer-alert").get_attribute('textContent').strip()
                 if 'open' in status.lower():
                     self.emit(status)
                     red_name = self.salty_driver.find_element_by_id("sbettors1")\
@@ -109,17 +111,16 @@ class Scraper(object):
                         continue
 
                     if 'exhibition' in alert:
-                        mode = 'e'
+                        mode = Match.EXHIBITION
                     elif 'Tournament' in alert:
-                        mode = 't'
-                    # FINAL ROUND! Stay tuned for exhibitions after the tournament!
+                        mode = Match.TOURNAMENT
                     elif 'bracket' in alert:
-                        mode = 't'
+                        mode = Match.TOURNAMENT
                     else:
-                        mode = 'm'
+                        mode = Match.MATCHMAKING
 
-                    match = {'red': red, 'blue': blue, 'mode': mode,
-                             'date': datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(get_localzone())}
+                    match = Match(**{'red': red_name, 'blue': blue_name, 'mode': mode,
+                                     'date': datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(get_localzone())})
 
                     # guess, confidence = agent.guess(match)
                     # self.emit('-- New Match --'
@@ -130,44 +131,43 @@ class Scraper(object):
                     #           '\n\nPick: {} ({}%)'.format(red.name, blue.name, mode.title(), red.matches,
                     #                                       blue.matches, red.wins, blue.wins, red.losses,
                     #                                       blue.losses, guess.name, confidence * 100))
-                # elif 'locked' in status.lower():
-                #     self.emit(status)
-                    # if match is None:
-                    #     continue
-                    # start_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(get_localzone())
-                    # bet_string = self.salty_driver.find_element_by_id("odds").text
-                    # bets = [bet_regex.sub('', b) for b in bet_string.split(' ') if '$' in b]
-                    # match.red_betters = int(self.salty_driver.find_element_by_id("sbettors1")
-                    #                         .find_element_by_class_name('redtext').text.split('|')[0].strip())
-                    # match.blue_betters = int(self.salty_driver.find_element_by_id("sbettors2")
-                    #                          .find_element_by_class_name('bluetext').text.split('|')[-1].strip())
-                    # try:
-                    #     match.red_bet = int(bets[0])
-                    #     match.blue_bet = int(bets[-1])
-                    # except IndexError:
-                    #     pass
-                    # match.save()
-                    # self.emit('Red:\t${} ({})'
-                    #           '\nBlue:\t${} ({})'
-                    #           '\nOdds:\t{}'.format(match.red_bet, match.red_betters, match.blue_bet,
-                    #                                match.blue_betters, match.get_odds()))
+                elif 'locked' in status.lower():
+                    self.emit(status)
+                    if match is None:
+                        continue
+                    start_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(get_localzone())
+                    bet_string = self.salty_driver.find_element_by_id("odds").text
+                    bets = [bet_regex.sub('', b) for b in bet_string.split(' ') if '$' in b]
+                    match.red_betters = int(self.salty_driver.find_element_by_id("sbettors1")
+                                            .find_element_by_class_name('redtext').text.split('|')[0].strip())
+                    match.blue_betters = int(self.salty_driver.find_element_by_id("sbettors2")
+                                             .find_element_by_class_name('bluetext').text.split('|')[-1].strip())
+                    try:
+                        match.red_bet = int(bets[0])
+                        match.blue_bet = int(bets[-1])
+                    except IndexError:
+                        pass
+                    self.emit('Red:\t${} ({})'
+                              '\nBlue:\t${} ({})'
+                              '\nOdds:\t{}'.format(match.red_bet, match.red_betters, match.blue_bet,
+                                                   match.blue_betters, match.get_odds()))
                 elif 'wins' in status.lower():
                     self.emit(status)
-                    # if match is None or start_time is None:
-                    #     continue
-                    # match.winner = red if red.name == status.split(' wins!')[0].strip() else blue
-                    # match.time = (datetime.utcnow().replace(tzinfo=pytz.utc)
-                    #               .astimezone(get_localzone()) - start_time).seconds
-                    # match.save()
-                    # match = None
-                    # start_time = None
+                    if match is None or start_time is None:
+                        continue
+                    match.winner = match.red if match.red == status.split(' wins!')[0].strip() else match.blue
+                    match.time = (datetime.utcnow().replace(tzinfo=pytz.utc)
+                                  .astimezone(get_localzone()) - start_time).seconds
+                    match.save()
+                    match = None
+                    start_time = None
                     if 'more matches until the next tournament' in alert:
                         data = alert.split(' ')
                         if data[0] == self.ALERT_TOURNAMENT:
                             self.discord_bot.send_to_salt('@Salt {}'.format(alert))
                         else:
                             self.emit(alert)
-                    else:
+                    elif alert:
                         self.emit(alert)
         except KeyboardInterrupt:
             # catches CTRL + C
