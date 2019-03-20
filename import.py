@@ -12,10 +12,6 @@ if __name__ == '__main__':
     try:
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
-        cur.execute('DROP TABLE IF EXISTS Matches')
-        cur.execute('CREATE TABLE Matches (red TEXT, blue TEXT, winner TEXT, tier TEXT, time INTEGER, mode TEXT, '
-                    'red_betters INTEGER, blue_betters INTEGER, red_bet INTEGER, blue_bet INTEGER, red_odds REAL, '
-                    'blue_odds REAL, date DATE)')
         skip = 0
         with open(sys.argv[1], 'rb') as file:
             for row in file.readlines():

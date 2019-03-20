@@ -1,10 +1,6 @@
 import sqlite3
 
-from models import db_path, Match
+from models import db_path, Chromosome
 
-with sqlite3.connect(db_path) as conn:
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM Matches LIMIT 1')
-    match = Match(cur.fetchone())
-    match.save()
-    test = 1
+test = Chromosome.all()
+test = 1

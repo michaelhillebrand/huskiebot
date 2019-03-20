@@ -83,8 +83,8 @@ class Scraper(object):
             print('Running Scraper...')
             match = None
             start_time = None
-            red = None
-            blue = None
+            red_name = None
+            blue_name = None
             # noinspection RegExpSingleCharAlternation
             bet_regex = re.compile(r"\$|,")
             # print('Loading Agent')
@@ -158,7 +158,7 @@ class Scraper(object):
                     match.winner = match.red if match.red == status.split(' wins!')[0].strip() else match.blue
                     match.time = (datetime.utcnow().replace(tzinfo=pytz.utc)
                                   .astimezone(get_localzone()) - start_time).seconds
-                    match.save()
+                    match.create()
                     match = None
                     start_time = None
                     if 'more matches until the next tournament' in alert:
