@@ -30,6 +30,7 @@ class HuskieBot(discord.Client):
     def __init__(self, *, loop=None, **options):
         self.doc_bop = None
         self.salt_channel = None
+        self.gru_channel = None
         self.will = None
         self.media_dir = 'media/'
         self.rps_stats = {}
@@ -44,6 +45,14 @@ class HuskieBot(discord.Client):
                           message=message))
         log.close()
 
+    async def post_gru_nose_pics(self):
+        while True:
+            now = datetime.datetime.now()
+            if now.time().hour == datetime.time(20).hour:
+                print("It's 8:00pm!")
+                await self.send_file(self.gru_channel, '/home/michael/Pictures/gru_pics/{}.png'.format(now.date()))
+            await asyncio.sleep(1200)  # check every hour
+
     async def url_download(self, message, content):
         await self.wait_until_ready()
         r = requests.get(content[-1], stream=True)
@@ -51,7 +60,9 @@ class HuskieBot(discord.Client):
             try:
                 with NamedTemporaryFile() as temp:
                     print('Downloading File...')
-                    await self.send_message(message.channel, 'Downloading file...')
+                    await self.send_message(message.channel,
+                                            '{} I am downloading the file. I will ping you when I finish.'
+                                            .format(message.author.mention))
                     for chunk in r.iter_content(chunk_size=1024):
                         if chunk:  # filter out keep-alive new chunks
                             temp.write(chunk)
@@ -59,7 +70,8 @@ class HuskieBot(discord.Client):
                     temp.flush()
                     temp.seek(0)
                     print('File downloaded!')
-                    await self.send_message(message.channel, 'File downloaded!')
+                    await self.send_message(message.author,
+                                            'Hey, I have finished downloading your file! I am now processing it.')
                     with ZipFile(temp.name, 'r') as zip_file:
                         for file in zip_file.infolist():
                             image = Image.open(BytesIO(zip_file.read(file.filename)))
@@ -71,12 +83,13 @@ class HuskieBot(discord.Client):
                 self.log(level=SUCCESS,
                          user=message.author,
                          message='file uploaded')
-                await self.send_message(message.channel, 'Dank ZIP uploaded successfully')
+                await self.send_message(message.author, 'I finished processing your upload. Shitpost away!')
             except Exception as e:
                 self.log(level=ERROR,
                          user=message.author,
-                         message='file failed to upload')
-                await self.send_message(message.channel, 'Error: {}'.format(e))
+                         message='file failed to upload: {}'.format(e))
+                await self.send_message(message.author,
+                                        'I got an error while uploading your URL: {}'.format(e))
 
     async def rps_play(self, message, move):
         if self.rps_stats.get(message.author.id, None):
@@ -132,7 +145,9 @@ class HuskieBot(discord.Client):
         await self.change_presence(game=discord.Game(name='Shitposting Memes'))
         self.doc_bop = self.get_server('100708750096080896')
         self.salt_channel = self.doc_bop.get_channel('555186709772501013')
+        self.gru_channel = self.doc_bop.get_channel('537442178289500160')
         self.will = self.doc_bop.get_member_named('ARDelta#9051')
+        self.loop.create_task(self.post_gru_nose_pics())
         print('Huskie Bot Online')
 
     async def on_message(self, message):
@@ -148,6 +163,7 @@ class HuskieBot(discord.Client):
                                     "!dank          - HuskieBot will shitpost a random image it has\n"
                                     "!upload        - Uploads a single image to HuskieBot for use with \"!dank\" command\n"
                                     "!bulkupload    - Uploads a ZIP of images to HuskieBot for use with \"!dank\" command\n"
+                                    "!urlupload     - Uploads a ZIP of images to HuskieBot (via URL) for use with \"!dank\" command\n"
                                     "!shutup        - HuskieBot will tell Will to shutup\n"
                                     )
 
@@ -167,7 +183,7 @@ class HuskieBot(discord.Client):
         elif message.content.startswith('!paper'):
             await self.rps_play(message, PAPER)
 
-        elif message.content.startswith('!rock'):
+        elif message.content.startswith('!scissors'):
             await self.rps_play(message, SCISSORS)
 
         elif message.content.startswith('!rps'):
