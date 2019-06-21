@@ -92,7 +92,7 @@ class HuskieBot(discord.Client):
                          user=message.author,
                          message='file failed to upload: {}'.format(e))
                 await self.send_message(message.author,
-                                        'I got an error while uploading your URL: {}'.format(e))
+                                        'I got an error while uploading your file: {}'.format(e))
 
     async def rps_play(self, message, move):
         if self.rps_stats.get(message.author.id, None):
