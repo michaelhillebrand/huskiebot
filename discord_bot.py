@@ -61,9 +61,10 @@ class HuskieBot(discord.Client):
                 with NamedTemporaryFile() as temp:
                     print('Downloading File...')
                     await self.send_message(message.channel,
-                                            '{} I am downloading the file. I will ping you when I finish.'
+                                            '{} I am downloading the file. This may take a long time. '
+                                            'I will ping you when I finish.'
                                             .format(message.author.mention))
-                    for chunk in r.iter_content(chunk_size=1024):
+                    for chunk in r.iter_content(chunk_size=4096):
                         if chunk:  # filter out keep-alive new chunks
                             temp.write(chunk)
                         await asyncio.sleep(0.01)
@@ -73,6 +74,7 @@ class HuskieBot(discord.Client):
                     await self.send_message(message.author,
                                             'Hey, I have finished downloading your file! I am now processing it.')
                     with ZipFile(temp.name, 'r') as zip_file:
+                        file_count = len(zip_file.infolist())
                         for file in zip_file.infolist():
                             image = Image.open(BytesIO(zip_file.read(file.filename)))
                             image = image.convert(mode='RGB')
@@ -83,7 +85,8 @@ class HuskieBot(discord.Client):
                 self.log(level=SUCCESS,
                          user=message.author,
                          message='file uploaded')
-                await self.send_message(message.author, 'I finished processing your upload. Shitpost away!')
+                await self.send_message(message.author, 'I finished processing your upload of {} images. '
+                                                        'Shitpost away!'.format(file_count))
             except Exception as e:
                 self.log(level=ERROR,
                          user=message.author,
@@ -116,12 +119,13 @@ class HuskieBot(discord.Client):
             elif result == 0:
                 game['ties'] += 1
             if max(game['user_score'], game['bot_score']) >= math.ceil(BEST_OF/2):
-                await self.send_message(message.channel, 'User\t\t\tHuskieBot\n'
+                await self.send_message(message.channel, '{user}\t\t\tHuskieBot\n'
                                                          '{user_move}\tvs.\t{bot_move}\n'
                                                          'GAME OVER\n'
                                                          'Final Score: {user_score}-{bot_score}-{ties}\n\n'
                                                          'Want to play again?'
-                                        .format(user_move=move,
+                                        .format(user=message.author.id,
+                                                user_move=move,
                                                 bot_move=bot_move,
                                                 user_score=game['user_score'],
                                                 bot_score=game['bot_score'],
@@ -130,10 +134,11 @@ class HuskieBot(discord.Client):
                                         )
                 self.rps_stats.pop(message.author.id, None)
             else:
-                await self.send_message(message.channel, 'User\t\t\tHuskieBot\n'
+                await self.send_message(message.channel, '{user}\t\t\tHuskieBot\n'
                                                          '{user_move}\tvs.\t{bot_move}\n'
                                                          'Current Score: {user_score}-{bot_score}-{ties}'
-                                        .format(user_move=move,
+                                        .format(user=message.author.id,
+                                                user_move=move,
                                                 bot_move=bot_move,
                                                 user_score=game['user_score'],
                                                 bot_score=game['bot_score'],
