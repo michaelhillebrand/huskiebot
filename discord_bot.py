@@ -89,6 +89,36 @@ class HuskieBot(discord.Client):
                          message='file failed to upload: {}'.format(e))
                 await message.author.send('I got an error while uploading your file: {}'.format(e))
 
+    async def gru(self, message, content):
+        await self.wait_until_ready()
+        r = requests.get(content[-1], stream=True)
+        if r.status_code == 200:
+            try:
+                with NamedTemporaryFile() as temp:
+                    print('Downloading File...')
+                    await message.channel.send('{} I am downloading the file. This may take a long time. '
+                                               'I will ping you when I finish.'
+                                               .format(message.author.mention))
+                    for chunk in r.iter_content(chunk_size=4096):
+                        if chunk:  # filter out keep-alive new chunks
+                            temp.write(chunk)
+                        await asyncio.sleep(0.01)
+                    temp.flush()
+                    temp.seek(0)
+                    print('File downloaded!')
+                    await message.author.send('Hey, I have finished downloading your file! I am now processing it.')
+                    with ZipFile(temp.name, 'r') as zip_file:
+                        zip_file.extractall('/home/michael/Pictures/')
+                self.log(level=SUCCESS,
+                         user=message.author,
+                         message='file uploaded')
+                await message.author.send('I finished processing your upload')
+            except Exception as e:
+                self.log(level=ERROR,
+                         user=message.author,
+                         message='file failed to upload: {}'.format(e))
+                await message.author.send('I got an error while uploading your file: {}'.format(e))
+
     async def rps_play(self, message, move):
         if self.rps_stats.get(message.author.id, None):
             bot_move = RPS_CHOICES[randint(0, len(RPS_CHOICES) - 1)]
@@ -277,6 +307,13 @@ class HuskieBot(discord.Client):
 
         elif message.content.startswith('!shutup'):
             await message.channel.send('{} Shut up!'.format(self.will.mention))
+
+        elif message.content.startswith('!init-gru'):
+            content = message.content.split(' ')
+            if len(content) != 2:
+                await message.channel.send('That is not a valid url')
+            else:
+                self.loop.create_task(self.gru(message, content))
 
     async def close(self):
         print('Shutting Down...')
