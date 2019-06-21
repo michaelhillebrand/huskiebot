@@ -1,5 +1,3 @@
-import sys
-
 from discord_bot import HuskieBot
 
 if __name__ == '__main__':
