@@ -1,7 +1,10 @@
+import asyncio
 import datetime
 import os
 from io import BytesIO
 from random import randint
+from tempfile import NamedTemporaryFile
+from zipfile import ZipFile
 
 import discord
 import math
@@ -41,6 +44,40 @@ class HuskieBot(discord.Client):
                           message=message))
         log.close()
 
+    async def url_download(self, message, content):
+        await self.wait_until_ready()
+        r = requests.get(content[-1], stream=True)
+        if r.status_code == 200:
+            try:
+                with NamedTemporaryFile() as temp:
+                    print('Downloading File...')
+                    await self.send_message(message.channel, 'Downloading file...')
+                    for chunk in r.iter_content(chunk_size=1024):
+                        if chunk:  # filter out keep-alive new chunks
+                            temp.write(chunk)
+                        await asyncio.sleep(0.01)
+                    temp.flush()
+                    temp.seek(0)
+                    print('File downloaded!')
+                    await self.send_message(message.channel, 'File downloaded!')
+                    with ZipFile(temp.name, 'r') as zip_file:
+                        for file in zip_file.infolist():
+                            image = Image.open(BytesIO(zip_file.read(file.filename)))
+                            image = image.convert(mode='RGB')
+                            image.save(self.media_dir + '{}.jpg'.format(len(os.listdir('media/')) + 1),
+                                       format='JPEG',
+                                       optimize=True
+                                       )
+                self.log(level=SUCCESS,
+                         user=message.author,
+                         message='file uploaded')
+                await self.send_message(message.channel, 'Dank ZIP uploaded successfully')
+            except Exception as e:
+                self.log(level=ERROR,
+                         user=message.author,
+                         message='file failed to upload')
+                await self.send_message(message.channel, 'Error: {}'.format(e))
+
     async def rps_play(self, message, move):
         if self.rps_stats.get(message.author.id, None):
             bot_move = RPS_CHOICES[randint(0, len(RPS_CHOICES) - 1)]
@@ -66,7 +103,8 @@ class HuskieBot(discord.Client):
             elif result == 0:
                 game['ties'] += 1
             if max(game['user_score'], game['bot_score']) >= math.ceil(BEST_OF/2):
-                await self.send_message(message.channel, 'User\t\t\tHuskieBot\n{user_move}\tvs.\t{bot_move}\n'
+                await self.send_message(message.channel, 'User\t\t\tHuskieBot\n'
+                                                         '{user_move}\tvs.\t{bot_move}\n'
                                                          'GAME OVER\n'
                                                          'Final Score: {user_score}-{bot_score}-{ties}\n\n'
                                                          'Want to play again?'
@@ -79,7 +117,8 @@ class HuskieBot(discord.Client):
                                         )
                 self.rps_stats.pop(message.author.id, None)
             else:
-                await self.send_message(message.channel, 'User\t\t\tHuskieBot\n{user_move}\tvs.\t{bot_move}\n'
+                await self.send_message(message.channel, 'User\t\t\tHuskieBot\n'
+                                                         '{user_move}\tvs.\t{bot_move}\n'
                                                          'Current Score: {user_score}-{bot_score}-{ties}'
                                         .format(user_move=move,
                                                 bot_move=bot_move,
@@ -102,17 +141,15 @@ class HuskieBot(discord.Client):
         if message.author == self.user:
             return
 
-        # elif message.content.startswith('!commands'):
-        #     await self.send_message(message.channel,
-        #                             "hello\t\t- Say hi to Huskie Bot\n"
-        #                             "status\t\t- Display status of HuskieBot\n"
-        #                             "learn\t\t- Starts HuskieBot\'s learning algorithm "
-        #                             "(This will disable most commands while it is running\n"
-        #                             "stoplearn\t\t- Stops Huskie Bot\'s learning\n"
-        #                             "mute\t\t- Stops HuskieBot from posting stats about Salty Bet matches\n"
-        #                             "unmute\t\t- Huskie Bot will post stats about Salty Bet matches\n"
-        #                             "shutup\t\t- Huskie Bot will tell Will to shutup\n"
-        #                             )
+        elif message.content.startswith('!commands'):
+            await self.send_message(message.channel,
+                                    "!roll {int}    - Roll a die with X sides\n"
+                                    "!rps           - Start a Rock, Paper, Scissors game (Best of 3)\n"
+                                    "!dank          - HuskieBot will shitpost a random image it has\n"
+                                    "!upload        - Uploads a single image to HuskieBot for use with \"!dank\" command\n"
+                                    "!bulkupload    - Uploads a ZIP of images to HuskieBot for use with \"!dank\" command\n"
+                                    "!shutup        - HuskieBot will tell Will to shutup\n"
+                                    )
 
         elif message.content.startswith('!roll'):
             content = message.content.split(' ')
@@ -135,9 +172,16 @@ class HuskieBot(discord.Client):
 
         elif message.content.startswith('!rps'):
             if self.rps_stats.get(message.author.id, None):
+                game = self.rps_stats[message.author.id]
                 await self.send_message(message.channel,
-                                        'I already have a game started with you. We are on turn {} with a best of {}.'
-                                        .format(self.rps_stats[message.author.id]['turn'], BEST_OF))
+                                        'I already have a game started with you.\n'
+                                        'We are on turn {} with a best of {}.\n'
+                                        'The current score is {}-{}-{}'
+                                        .format(game['turn'],
+                                                BEST_OF,
+                                                game['user_score'],
+                                                game['bot_score'],
+                                                game['ties']))
             else:
                 self.rps_stats.update({message.author.id: {
                     'turn': 1,
@@ -165,9 +209,9 @@ class HuskieBot(discord.Client):
                     if response.status_code == 200:
                         try:
                             image = Image.open(BytesIO(response.content))
-                            image.convert(mode='RGB')
-                            image.save(self.media_dir + '{}.png'.format(len(os.listdir('media/')) + 1),
-                                       format='PNG',
+                            image = image.convert(mode='RGB')
+                            image.save(self.media_dir + '{}.jpg'.format(len(os.listdir('media/')) + 1),
+                                       format='JPEG',
                                        optimize=True
                                        )
                             self.log(level=SUCCESS,
@@ -180,10 +224,46 @@ class HuskieBot(discord.Client):
                                      message='{} failed to upload'.format(attachment['filename']))
                             await self.send_message(message.channel, 'Error: {}'.format(e))
 
+        elif message.content.startswith('!bulkupload'):
+            if not message.attachments:
+                await self.send_message(message.channel, 'No file detected')
+            else:
+                await self.send_message(message.channel, 'Processing file...')
+                for attachment in message.attachments:
+                    response = requests.get(attachment['url'])
+                    if response.status_code == 200:
+                        try:
+                            with NamedTemporaryFile() as temp:
+                                temp.write(response.content)
+                                temp.seek(0)
+                                with ZipFile(temp.name, 'r') as zip_file:
+                                    for file in zip_file.infolist():
+                                        image = Image.open(BytesIO(zip_file.read(file.filename)))
+                                        image = image.convert(mode='RGB')
+                                        image.save(self.media_dir + '{}.jpg'.format(len(os.listdir('media/')) + 1),
+                                                   format='JPEG',
+                                                   optimize=True
+                                                   )
+                            self.log(level=SUCCESS,
+                                     user=message.author,
+                                     message='{} uploaded'.format(attachment['filename']))
+                            await self.send_message(message.channel, 'Dank ZIP uploaded successfully')
+                        except Exception as e:
+                            self.log(level=ERROR,
+                                     user=message.author,
+                                     message='{} failed to upload'.format(attachment['filename']))
+                            await self.send_message(message.channel, 'Error: {}'.format(e))
+
+        elif message.content.startswith('!urlupload'):
+            content = message.content.split(' ')
+            if len(content) != 2:
+                await self.send_message(message.channel, 'That is not a valid url')
+            else:
+                self.loop.create_task(self.url_download(message, content))
+
         elif message.content.startswith('!shutup'):
             await self.send_message(message.channel, '{} Shut up!'.format(self.will.mention))
 
     async def close(self):
         print('Shutting Down...')
-        self.log_file.close()
         return super().close()
