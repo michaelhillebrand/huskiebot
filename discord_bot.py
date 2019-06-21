@@ -119,7 +119,7 @@ class HuskieBot(discord.Client):
                                            'GAME OVER\n'
                                            'Final Score: {user_score}-{bot_score}-{ties}\n\n'
                                            'Want to play again?'
-                                           .format(user=message.author.id,
+                                           .format(user=message.author.mention,
                                                    user_move=move,
                                                    bot_move=bot_move,
                                                    user_score=game['user_score'],
@@ -132,7 +132,7 @@ class HuskieBot(discord.Client):
                 await message.channel.send('{user}\t\t\tHuskieBot\n'
                                            '{user_move}\tvs.\t{bot_move}\n'
                                            'Current Score: {user_score}-{bot_score}-{ties}'
-                                           .format(user=message.author.id,
+                                           .format(user=message.author.mention,
                                                    user_move=move,
                                                    bot_move=bot_move,
                                                    user_score=game['user_score'],
