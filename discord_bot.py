@@ -186,6 +186,7 @@ class HuskieBot(discord.Client):
 
         elif message.content.startswith('!commands'):
             await message.channel.send(
+                "!status                - Displays the status of HuskieBot\n"
                 "!roll {int}            - Roll a die with X sides\n"
                 "!rps                   - Start a Rock, Paper, Scissors game (Best of 3)\n"
                 "!dank                  - HuskieBot will shitpost a random image it has\n"
@@ -195,6 +196,10 @@ class HuskieBot(discord.Client):
                 "!urlupload             - Uploads a ZIP of images to HuskieBot (via URL) for use with \"!dank\" command\n"
                 "!shutup                - HuskieBot will tell Will to shutup\n"
             )
+
+        elif message.content.startswith('!status'):
+            count = len([name for name in os.listdir('media/') if os.path.isfile(os.path.join('media/', name))])
+            await message.channel.send('I currently have {} memes in my library'.format(count))
 
         elif message.content.startswith('!roll'):
             content = message.content.split(' ')
@@ -252,7 +257,7 @@ class HuskieBot(discord.Client):
                         await message.channel.send(index, file=discord.File('media/{}'.format(images[index])))
                     else:
                         raise RuntimeError
-                except Exception:
+                except (ValueError, RuntimeError, IndexError):
                     await message.channel.send('That is not a valid meme')
 
         elif message.content.startswith('!upload'):
