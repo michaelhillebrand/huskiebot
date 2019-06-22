@@ -242,14 +242,14 @@ class HuskieBot(discord.Client):
                 await message.channel.send('I don\'t have any images to shitpost with')
             else:
                 image = images[randint(0, len(images)) - 1]
-                await message.channel.send_file('media/{}'.format(image), filename=image)
+                await message.channel.send(file=discord.File('media/{}'.format(image)))
 
         elif message.content.startswith('!upload'):
             if not message.attachments:
                 await message.channel.send('No file detected')
             else:
                 for attachment in message.attachments:
-                    response = requests.get(attachment['url'])
+                    response = requests.get(attachment.url)
                     if response.status_code == 200:
                         try:
                             image = Image.open(BytesIO(response.content))
@@ -260,12 +260,12 @@ class HuskieBot(discord.Client):
                                        )
                             self.log(level=SUCCESS,
                                      user=message.author,
-                                     message='{} uploaded'.format(attachment['filename']))
+                                     message='{} uploaded'.format(attachment.filename))
                             await message.channel.send('Dank image uploaded successfully')
                         except Exception as e:
                             self.log(level=ERROR,
                                      user=message.author,
-                                     message='{} failed to upload'.format(attachment['filename']))
+                                     message='{} failed to upload'.format(attachment.filename))
                             await message.channel.send('Error: {}'.format(e))
 
         elif message.content.startswith('!bulkupload'):
@@ -274,7 +274,7 @@ class HuskieBot(discord.Client):
             else:
                 await message.channel.send('Processing file...')
                 for attachment in message.attachments:
-                    response = requests.get(attachment['url'])
+                    response = requests.get(attachment.url)
                     if response.status_code == 200:
                         try:
                             with NamedTemporaryFile() as temp:
@@ -290,12 +290,12 @@ class HuskieBot(discord.Client):
                                                    )
                             self.log(level=SUCCESS,
                                      user=message.author,
-                                     message='{} uploaded'.format(attachment['filename']))
+                                     message='{} uploaded'.format(attachment.filename))
                             await message.channel.send('Dank ZIP uploaded successfully')
                         except Exception as e:
                             self.log(level=ERROR,
                                      user=message.author,
-                                     message='{} failed to upload'.format(attachment['filename']))
+                                     message='{} failed to upload'.format(attachment.filename))
                             await message.channel.send('Error: {}'.format(e))
 
         elif message.content.startswith('!urlupload'):
