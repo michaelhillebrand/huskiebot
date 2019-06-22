@@ -186,13 +186,14 @@ class HuskieBot(discord.Client):
 
         elif message.content.startswith('!commands'):
             await message.channel.send(
-                "!roll {int}    - Roll a die with X sides\n"
-                "!rps           - Start a Rock, Paper, Scissors game (Best of 3)\n"
-                "!dank          - HuskieBot will shitpost a random image it has\n"
-                "!upload        - Uploads a single image to HuskieBot for use with \"!dank\" command\n"
-                "!bulkupload    - Uploads a ZIP of images to HuskieBot for use with \"!dank\" command\n"
-                "!urlupload     - Uploads a ZIP of images to HuskieBot (via URL) for use with \"!dank\" command\n"
-                "!shutup        - HuskieBot will tell Will to shutup\n"
+                "!roll {int}            - Roll a die with X sides\n"
+                "!rps                   - Start a Rock, Paper, Scissors game (Best of 3)\n"
+                "!dank                  - HuskieBot will shitpost a random image it has\n"
+                "!dank {index}          - HuskieBot will shitpost a specific image it has based on index\n"
+                "!upload                - Uploads a single image to HuskieBot for use with \"!dank\" command\n"
+                "!bulkupload            - Uploads a ZIP of images to HuskieBot for use with \"!dank\" command\n"
+                "!urlupload             - Uploads a ZIP of images to HuskieBot (via URL) for use with \"!dank\" command\n"
+                "!shutup                - HuskieBot will tell Will to shutup\n"
             )
 
         elif message.content.startswith('!roll'):
@@ -241,8 +242,18 @@ class HuskieBot(discord.Client):
             if len(images) == 0:
                 await message.channel.send('I don\'t have any images to shitpost with')
             else:
-                image = images[randint(0, len(images)) - 1]
-                await message.channel.send(file=discord.File('media/{}'.format(image)))
+                try:
+                    content = message.content.split(' ')
+                    if len(content) == 1:
+                        index = randint(0, len(images)) - 1
+                        await message.channel.send(index, file=discord.File('media/{}'.format(images[index])))
+                    elif len(content) == 2:
+                        index = int(content[-1])
+                        await message.channel.send(index, file=discord.File('media/{}'.format(images[index])))
+                    else:
+                        raise RuntimeError
+                except Exception:
+                    await message.channel.send('That is not a valid meme')
 
         elif message.content.startswith('!upload'):
             if not message.attachments:
