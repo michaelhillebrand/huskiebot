@@ -48,7 +48,7 @@ class HuskieBot(discord.Client):
             now = datetime.datetime.now()
             if now.time().hour == datetime.time(20).hour:
                 print("It's 8:00pm!")
-                await self.gru_channel.send_file('/home/michael/Pictures/gru_pics/{}.png'.format(now.date()))
+                await self.gru_channel.send(file=discord.File('/home/michael/Pictures/gru_pics/{}.png'.format(now.date())))
             await asyncio.sleep(1200)  # check every hour
 
     async def url_download(self, message, content):
@@ -208,7 +208,7 @@ class HuskieBot(discord.Client):
             else:
                 try:
                     await message.channel.send('{}'.format(randint(1, int(content[-1]))))
-                except ValueError:
+                except Exception:
                     await message.channel.send('That is not a valid roll')
 
         elif message.content.startswith('!rock'):
