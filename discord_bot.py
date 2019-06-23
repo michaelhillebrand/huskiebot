@@ -46,7 +46,7 @@ class HuskieBot(discord.Client):
     async def post_gru_nose_pics(self):
         while True:
             now = datetime.datetime.now()
-            if now.time().hour == datetime.time(20).hour:
+            if now.time().hour == 20:
                 print("It's 8:00pm!")
                 await self.gru_channel.send(file=discord.File('/home/michael/Pictures/gru_pics/{}.png'.format(now.date())))
             await asyncio.sleep(1200)  # check every hour
