@@ -49,7 +49,7 @@ class HuskieBot(discord.Client):
             if now.hour == 20:
                 print("It's 8:00pm!")
                 await self.gru_channel.send(file=discord.File('/home/michael/Pictures/gru_pics/{}.png'.format(now.date())))
-            await asyncio.sleep(1200)  # check every hour
+            await asyncio.sleep(3600)  # check every hour
 
     async def url_download(self, message, content):
         await self.wait_until_ready()
