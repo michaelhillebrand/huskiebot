@@ -1,4 +1,5 @@
 # Standard library
+import logging
 import os
 
 # Pip installed libraries
@@ -9,6 +10,7 @@ from discord_bot import HuskieBot
 
 if __name__ == '__main__':
     # Config
+    logging.basicConfig(level=logging.INFO)
     dotenv.load_dotenv()
     DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
