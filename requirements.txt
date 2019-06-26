@@ -14,6 +14,7 @@ Pillow==6.0.0
 pkg-resources==0.0.0
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
+python-dotenv==0.10.3
 pytz==2018.9
 requests==2.22.0
 requests-oauthlib==1.2.0
