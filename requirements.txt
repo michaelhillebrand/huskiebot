@@ -10,6 +10,10 @@ idna-ssl==1.1.0
 multidict==4.5.2
 Pillow==6.0.0
 pkg-resources==0.0.0
+pyasn1==0.4.5
+pyasn1-modules==0.2.5
+python-dotenv==0.10.3
+pytz==2018.9
 requests==2.22.0
 typing-extensions==3.7.4
 urllib3==1.25.3
