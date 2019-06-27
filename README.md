@@ -20,7 +20,7 @@ fix/{branch-name} - For bug fixes
 """
 Summary line.
 
-Extended description of function.
+Extended description of function. (Optional)
 
 Parameters
 ----------
