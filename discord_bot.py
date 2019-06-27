@@ -23,6 +23,28 @@ PAPER = 'Paper'
 SCISSORS = 'Scissors'
 
 RPS_CHOICES = [ROCK, PAPER, SCISSORS]
+EIGHT_BALL_CHOICES = [
+    'It is certain',
+    'It is decidedly so',
+    'Without a doubt',
+    'Yes - Definitely',
+    'You may rely on it',
+    'As I see it, yes',
+    'Most likely',
+    'Outlook Good',
+    'Yes',
+    'Signs point to yes',
+    'Reply hasy, try again',
+    'Ask again later',
+    'Better not tell you now',
+    'Cannot predict now',
+    'Concentrate and ask again',
+    'Don\'t count on it',
+    'My reply is no',
+    'My sources say no',
+    'Outlook not so good',
+    'Very doubtful'
+]
 
 
 class HuskieBot(discord.Client):
@@ -210,6 +232,16 @@ class HuskieBot(discord.Client):
                     await message.channel.send('{}'.format(randint(1, int(content[-1]))))
                 except Exception:
                     await message.channel.send('That is not a valid roll')
+
+        elif message.content.startswith('!8ball'):
+            content = message.content.split(' ')
+            if not len(content) >= 2 or content[-1][-1] != '?':
+                await message.channel.send('You need to ask a question')
+            else:
+                await message.channel.send(EIGHT_BALL_CHOICES[randint(0, len(EIGHT_BALL_CHOICES) - 1)])
+
+        elif message.content.startswith('!invite'):
+            await message.author.voice.channel.connect()
 
         elif message.content.startswith('!rock'):
             await self.rps_play(message, ROCK)
