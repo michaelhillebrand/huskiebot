@@ -12,6 +12,6 @@ Huskie's bot
 7. Set `DISCORD_BOT_TOKEN` to your bot token
 8. `python3 run.py`
 
-### Branch Structure
-feature/{branch-name} - For new features
+## Branch Structure
+feature/{branch-name} - For new features<br />
 fix/{branch-name} - For bug fixes
