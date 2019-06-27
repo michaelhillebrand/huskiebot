@@ -14,6 +14,11 @@ if __name__ == '__main__':
     dotenv.load_dotenv()
     DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
+    # Setup
+
+    if not os.path.exists('media'):
+        os.makedirs('media')
+
     try:
         client = HuskieBot()
         client.run(DISCORD_BOT_TOKEN)

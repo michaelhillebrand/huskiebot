@@ -197,7 +197,8 @@ class HuskieBot(discord.Client):
         await self.change_presence(activity=discord.Game(name='Shitposting Memes'))
         self.gru_channel = self.get_channel(537442178289500160)
         self.will = self.get_guild(100708750096080896).get_member_named('ARDelta#9051')
-        self.loop.create_task(self.post_gru_nose_pics())
+        if os.getenv('GRU_POST') == 'True':
+            self.loop.create_task(self.post_gru_nose_pics())
         print('Huskie Bot Online')
 
     async def on_message(self, message):
