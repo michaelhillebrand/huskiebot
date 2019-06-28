@@ -14,6 +14,7 @@ from commands.ping import Ping
 from commands.rps import RockPaperScissors
 from commands.shutup_will import ShutupWill
 from discord_bot import HuskieBot
+from tasks.chat_moderate import ChatModerator
 from tasks.gru_nose import GruNosePoster
 
 if __name__ == '__main__':
@@ -32,5 +33,6 @@ if __name__ == '__main__':
         Ping,
     ], tasks=[
         GruNosePoster,
+        ChatModerator,
     ])
     client.run(DISCORD_BOT_TOKEN)
