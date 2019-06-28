@@ -159,7 +159,9 @@ class DankMemePoster(BaseCommand):
 
     async def on_ready(self):
         await self.client.add_commands([
-            DankMemeUpload
+            DankMemeUpload,
+            DankMemeBulkUpload,
+            DankMemeUrlUpload
         ])
 
     async def command(self, message):

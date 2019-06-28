@@ -12,7 +12,11 @@ class HuskieBot(discord.Client):
             commands = []
         self.tasks = {task.id: task(self) for task in tasks}
         self.commands = {command.trigger: command(self) for command in commands}
-        self.media_dir = os.path.join(os.getcwd(), 'media/')
+        self.base_path = os.path.dirname(os.path.abspath(__file__))
+        media_path = os.path.join(self.base_path, 'media/')
+        if not os.path.exists(media_path):
+            os.makedirs(media_path)
+        self.media_dir = media_path
         super().__init__(loop=loop, **options)
 
     async def add_commands(self, commands):
@@ -59,7 +63,7 @@ class HuskieBot(discord.Client):
         elif message.content.startswith('!commands'):
             await message.channel.send('```{}```'.format('\n'.join(['!{trigger}{spacing}- {description}'.format(
                 trigger=command.trigger,
-                spacing=' ' * (15 - len(command.trigger)),
+                spacing=' ' * (max([len(trigger) for trigger in self.commands.keys()]) + 4 - len(command.trigger)),
                 description=command.description
             ) for _, command in self.commands.items()])))
 

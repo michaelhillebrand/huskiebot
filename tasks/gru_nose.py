@@ -18,7 +18,7 @@ class GruNosePoster(BaseTask):
             if now.hour == 20:
                 print("It's 8:00pm!")  # TODO add to log
                 try:
-                    await self.channel.send(file=discord.File('/home/michael/Pictures/gru_pics/{}.png'.format(now.date())))
+                    await self.channel.send(file=discord.File(self.client.base_path, 'gru/{}.png'.format(now.date())))
                 except FileNotFoundError:
                     pass  # TODO log failure
             await asyncio.sleep(3600)  # check every hour
