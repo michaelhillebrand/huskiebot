@@ -22,5 +22,5 @@ class ShutupWill(BaseCommand):
 
         """
         if not self.will:
-            self.will = self.client.get_guild(100708750096080896).get_member_named('ARDelta#9051')
+            self.will = self.client.get_user(187364654455062528)
         await message.channel.send('{} Shut up!'.format(self.will.mention))
