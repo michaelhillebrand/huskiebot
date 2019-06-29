@@ -2,6 +2,11 @@ import os
 
 import discord
 
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+MEDIA_PATH = os.path.join(BASE_PATH, 'media/')
+if not os.path.exists(MEDIA_PATH):
+    os.makedirs(MEDIA_PATH)
+
 
 class HuskieBot(discord.Client):
 
@@ -12,11 +17,6 @@ class HuskieBot(discord.Client):
             commands = []
         self.tasks = {task.id: task(self) for task in tasks}
         self.commands = {command.trigger: command(self) for command in commands}
-        self.base_path = os.path.dirname(os.path.abspath(__file__))
-        media_path = os.path.join(self.base_path, 'media/')
-        if not os.path.exists(media_path):
-            os.makedirs(media_path)
-        self.media_dir = media_path
         super().__init__(loop=loop, **options)
 
     async def add_commands(self, commands):

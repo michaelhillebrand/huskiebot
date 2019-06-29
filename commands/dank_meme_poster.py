@@ -8,52 +8,74 @@ from zipfile import ZipFile
 import discord
 import requests
 from PIL import Image
+from requests import HTTPError
 
 from commands.base import BaseCommand
+from discord_bot import MEDIA_PATH
 
 
-class DankMemeUrlUpload(BaseCommand):
-    trigger = 'dankurlupload'
-    description = 'Uploads a ZIP of images to HuskieBot (via URL) for use with "!dank" command'
+def process_image(file):
+    """
+    processes image/gif and saves it to hard drive
 
-    async def _download(self, message):
+    Parameters
+    ----------
+    file : BytesIO
+
+    Returns
+    -------
+    None
+
+    """
+    file.seek(0)
+    image = Image.open(file)
+    if image.format == 'GIF':
+        image.save(os.path.join(MEDIA_PATH, '{}.gif'.format(len(os.listdir(MEDIA_PATH)))),
+                   save_all=True,
+                   optimize=True
+                   )
+    else:
+        image = image.convert(mode='RGB')
+        image.save(os.path.join(MEDIA_PATH, '{}.jpg'.format(len(os.listdir(MEDIA_PATH)))),
+                   format='JPEG',
+                   optimize=True
+                   )
+
+
+class DankMemeBulkUpload(BaseCommand):
+    trigger = 'dankbulkupload'
+    description = 'Uploads a ZIP of images to HuskieBot (via attachments or URL) for use with "!dank" command'
+
+    async def _download(self, url):
+        """
+        downlaods ZIP file from url
+
+        Parameters
+        ----------
+        url : str
+
+        Returns
+        -------
+        ZipFile
+
+        """
         await self.client.wait_until_ready()
-        try:
-            r = requests.get(message.content[-1], stream=True)
-            if r.status_code == 200:
-                with NamedTemporaryFile() as temp:
-                    print('Downloading File...')
-                    await message.channel.send('{} I am downloading the file. This may take a long time. '
-                                               'I will ping you when I finish.'
-                                               .format(message.author.mention))
-                    for chunk in r.iter_content(chunk_size=4096):
-                        if chunk:  # filter out keep-alive new chunks
-                            temp.write(chunk)
-                        await asyncio.sleep(0.01)
-                    temp.flush()
-                    temp.seek(0)
-                    print('File downloaded!')
-                    await message.author.send('Hey, I have finished downloading your file! I am now processing it.')
-                    with ZipFile(temp.name, 'r') as zip_file:
-                        file_count = len(zip_file.infolist())
-                        for file in zip_file.infolist():
-                            image = Image.open(BytesIO(zip_file.read(file.filename)))
-                            image = image.convert(mode='RGB')
-                            image.save(os.path.join(self.client.media_dir,
-                                                    '{}.jpg'.format(
-                                                        len(os.listdir(self.client.media_dir))
-                                                    )),
-                                       format='JPEG',
-                                       optimize=True
-                                       )
-                await message.author.send('I finished processing your upload of {} images. '
-                                          'Shitpost away!'.format(file_count))
-        except Exception as e:
-            await message.author.send('I got an error while uploading your file: {}'.format(e))
+        r = requests.get(url, stream=True)
+        if r.status_code == 200:
+            with NamedTemporaryFile() as temp:
+                for chunk in r.iter_content(chunk_size=4096):
+                    if chunk:  # filter out keep-alive new chunks
+                        temp.write(chunk)
+                    await asyncio.sleep(0.01)  # allows HuskieBot to respond to other requests
+                temp.flush()
+                temp.seek(0)
+                return ZipFile(temp.name, 'r')
+        else:
+            raise HTTPError('Received a non 200 status code: {}'.format(r.status_code))
 
     async def command(self, message):
         """
-        uploads a zip of images from a url to HuskieBot's library
+        uploads a zip of images from attachments or url to HuskieBot's library
 
         Parameters
         ----------
@@ -65,55 +87,33 @@ class DankMemeUrlUpload(BaseCommand):
 
         """
         args = message.content.split(' ')[1:]
-        if len(args) != 1:
+        if message.attachments or len(args) == 1:
+            await message.channel.send('{} I am downloading the file. This may take a long time. '
+                                       'I will ping you when I finish.'
+                                       .format(message.author.mention))
+            file_count = 0
+            try:
+                zip_file = None
+                if message.attachments:
+                    for attachment in message.attachments:
+                        zip_file = await self._download(attachment.url)
+                        file_count += len(zip_file.infolist())
+                        for file in zip_file.infolist():
+                            process_image(BytesIO(zip_file.read(file.filename)))
+                else:
+                    zip_file = await self._download(args[0])
+                    file_count += len(zip_file.infolist())
+                    for file in zip_file.infolist():
+                        process_image(BytesIO(zip_file.read(file.filename)))
+                zip_file.close()
+                await message.author.send('I finished processing your upload of {} images. '
+                                          'Shitpost away!'.format(file_count))
+            except Exception as e:
+                await message.author.send('I got an error while uploading your file: {}'.format(e))
+        elif len(args) > 1:
             await message.channel.send('That is not a valid url')
         else:
-            self.client.loop.create_task(self._download(message))
-
-
-class DankMemeBulkUpload(BaseCommand):
-    trigger = 'dankbulkupload'
-    description = 'Uploads a ZIP of images to HuskieBot for use with "!dank" command'
-
-    async def command(self, message):
-        """
-        uploads a zip of images to HuskieBot's library
-
-        Parameters
-        ----------
-        message : discord.Message
-
-        Returns
-        -------
-        str
-
-        """
-        if not message.attachments:
-            await message.channel.send('No file detected')
-        else:
-            async with message.channel.typing():
-                await message.channel.send('Processing file...')
-                for attachment in message.attachments:
-                    response = requests.get(attachment.url)
-                    if response.status_code == 200:
-                        try:
-                            with NamedTemporaryFile() as temp:
-                                temp.write(response.content)
-                                temp.seek(0)
-                                with ZipFile(temp.name, 'r') as zip_file:
-                                    for file in zip_file.infolist():
-                                        image = Image.open(BytesIO(zip_file.read(file.filename)))
-                                        image = image.convert(mode='RGB')
-                                        image.save(os.path.join(self.client.media_dir,
-                                                                '{}.jpg'.format(
-                                                                    len(os.listdir(self.client.media_dir))
-                                                                )),
-                                                   format='JPEG',
-                                                   optimize=True
-                                                   )
-                            await message.channel.send('Dank ZIP uploaded successfully')
-                        except Exception as e:
-                            await message.channel.send('Error: {}'.format(e))
+            await message.channel.send('No file or url has been provided')
 
 
 class DankMemeUpload(BaseCommand):
@@ -141,13 +141,7 @@ class DankMemeUpload(BaseCommand):
                     response = requests.get(attachment.url)
                     if response.status_code == 200:
                         try:
-                            image = Image.open(BytesIO(response.content))
-                            image = image.convert(mode='RGB')
-                            image.save(os.path.join(self.client.media_dir,
-                                                    '{}.jpg'.format(len(os.listdir(self.client.media_dir)))),
-                                       format='JPEG',
-                                       optimize=True
-                                       )
+                            process_image(BytesIO(response.content))
                             await message.channel.send('Dank image uploaded successfully')
                         except Exception as e:
                             await message.channel.send('Error: {}'.format(e))
@@ -160,8 +154,7 @@ class DankMemePoster(BaseCommand):
     async def on_ready(self):
         await self.client.add_commands([
             DankMemeUpload,
-            DankMemeBulkUpload,
-            DankMemeUrlUpload
+            DankMemeBulkUpload
         ])
 
     async def command(self, message):
@@ -178,7 +171,7 @@ class DankMemePoster(BaseCommand):
             Dank Image
 
         """
-        images = os.listdir(self.client.media_dir)
+        images = sorted(os.listdir(MEDIA_PATH))
         if len(images) == 0:
             await message.channel.send('I don\'t have any images to shitpost with')
         else:
@@ -187,9 +180,9 @@ class DankMemePoster(BaseCommand):
                 if len(args) > 1:
                     raise RuntimeError
                 elif len(args) == 1:
-                    index = int(args)
+                    index = int(args[0])
                 else:
                     index = randint(0, len(images) - 1)
-                await message.channel.send(index, file=discord.File(os.path.join(self.client.media_dir, images[index])))
+                await message.channel.send(index, file=discord.File(os.path.join(MEDIA_PATH, images[index])))
             except (ValueError, RuntimeError, IndexError):
                 await message.channel.send('That is not a valid meme')

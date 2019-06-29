@@ -23,7 +23,9 @@ class PurgeChat(BaseCommand):
         None
 
         """
-        if message.author.guild_permissions.administrator:
+        if message.channel.type == discord.ChannelType.private:
+            await message.channel.send('I can\'t purge a DM Channel')
+        elif message.author.guild_permissions.administrator:
             try:
                 args = message.content.split(' ')[1:]
                 if len(args) > 1:
