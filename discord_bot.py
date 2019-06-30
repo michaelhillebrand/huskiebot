@@ -66,7 +66,7 @@ class HuskieBot(discord.Client):
                 description=command.description
             ) for _, command in sorted(self.commands.items())])))
 
-        elif message.content[0] == '!':
+        elif message.content and message.content[0] == '!':
             trigger = message.content.split(' ')[0][1:]
             try:
                 await self.commands[trigger].run(message)

@@ -105,3 +105,9 @@ venv.bak/
 
 # Media Folder
 media/
+
+# ffmpeg Folder
+ffmpeg/
+
+# PyCharm config Folder
+.idea/
