@@ -9,7 +9,7 @@ import dotenv
 from commands.dank_meme_poster import DankMemePoster
 from commands.dice_roll import DiceRoll
 from commands.eight_ball import EightBall
-from commands.invite_bot import InviteBot
+from commands.invite_bot import InviteBot, DisconnectBot
 from commands.ping import Ping
 from commands.rps import RockPaperScissors
 from commands.shutup_will import ShutupWill
@@ -31,6 +31,7 @@ if __name__ == '__main__':
         RockPaperScissors,
         DankMemePoster,
         InviteBot,
+        DisconnectBot,
         Ping,
     ], tasks=[
         GruNosePoster,
