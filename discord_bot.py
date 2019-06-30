@@ -45,7 +45,6 @@ class HuskieBot(discord.Client):
         Runs tasks
         :return None:
         """
-        await self.change_presence(activity=discord.Game(name='Shitposting Memes'))
         [self.loop.create_task(command.on_ready()) for _, command in self.commands.items()]
         [self.loop.create_task(task.run()) for _, task in self.tasks.items()]
         print('Huskie Bot Online')
@@ -65,7 +64,7 @@ class HuskieBot(discord.Client):
                 trigger=command.trigger,
                 spacing=' ' * (max([len(trigger) for trigger in self.commands.keys()]) + 4 - len(command.trigger)),
                 description=command.description
-            ) for _, command in self.commands.items()])))
+            ) for _, command in sorted(self.commands.items())])))
 
         elif message.content[0] == '!':
             trigger = message.content.split(' ')[0][1:]

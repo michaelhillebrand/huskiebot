@@ -16,6 +16,7 @@ from commands.shutup_will import ShutupWill
 from discord_bot import HuskieBot
 from tasks.chat_moderate import ChatModerator
 from tasks.gru_nose import GruNosePoster
+from tasks.presence_changer import PresenceChanger
 
 if __name__ == '__main__':
     # Config
@@ -34,5 +35,6 @@ if __name__ == '__main__':
     ], tasks=[
         GruNosePoster,
         ChatModerator,
+        PresenceChanger,
     ])
     client.run(DISCORD_BOT_TOKEN)
