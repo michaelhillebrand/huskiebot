@@ -33,7 +33,7 @@ class PurgeChat(BaseCommand):
                 elif len(args) == 1:
                     limit = int(args[0])
                 else:
-                    limit = 10
+                    limit = 100
                 await message.channel.purge(limit=limit + 1)
             except ValueError:
                 await message.channel.send('That is not a valid number')
