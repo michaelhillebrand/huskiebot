@@ -14,7 +14,7 @@ class GruNosePoster(BaseTask):
 
     async def task(self):
         if not self.channel:
-            self.channel = self.client.get_channel(537442178289500160)
+            self.channel = self.client.get_channel(594707074609577994)
         while True:
             now = datetime.datetime.now()
             if now.hour == 20:
