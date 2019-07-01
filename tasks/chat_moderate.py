@@ -8,8 +8,6 @@ class PurgeChat(BaseCommand):
     trigger = 'purge'
     description = 'HuskieBot will clear n messages from channel'
 
-    will = None
-
     async def command(self, message):
         """
         HuskieBot will clear n messages from channel
