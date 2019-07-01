@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install nasm pkg-config python3-venv
+sudo apt install nasm pkg-config libopus0 python3-venv
 mkdir ffmpeg
 cd ffmpeg/
 wget https://ffmpeg.org/releases/ffmpeg-4.1.3.tar.bz2
