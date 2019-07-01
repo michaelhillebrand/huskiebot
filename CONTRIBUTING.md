@@ -1,5 +1,6 @@
 # Branching
 feature/{branch-name} - For new features<br />
+enhance/{branch-name} - Updating an existing feature<br />
 fix/{branch-name} - For bug fixes
 
 # Documentation Format
