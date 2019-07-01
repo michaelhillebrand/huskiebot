@@ -14,7 +14,7 @@ from commands.base import BaseCommand
 from discord_bot import MEDIA_PATH
 
 
-def process_image(file):
+def _process_image(file):
     """
     processes image/gif and saves it to hard drive
 
@@ -99,12 +99,12 @@ class DankMemeBulkUpload(BaseCommand):
                         zip_file = await self._download(attachment.url)
                         file_count += len(zip_file.infolist())
                         for file in zip_file.infolist():
-                            process_image(BytesIO(zip_file.read(file.filename)))
+                            _process_image(BytesIO(zip_file.read(file.filename)))
                 else:
                     zip_file = await self._download(args[0])
                     file_count += len(zip_file.infolist())
                     for file in zip_file.infolist():
-                        process_image(BytesIO(zip_file.read(file.filename)))
+                        _process_image(BytesIO(zip_file.read(file.filename)))
                 zip_file.close()
                 await message.author.send('I finished processing your upload of {} images. '
                                           'Shitpost away!'.format(file_count))
@@ -141,7 +141,7 @@ class DankMemeUpload(BaseCommand):
                     response = requests.get(attachment.url)
                     if response.status_code == 200:
                         try:
-                            process_image(BytesIO(response.content))
+                            _process_image(BytesIO(response.content))
                             await message.channel.send('Dank image uploaded successfully')
                         except Exception as e:
                             await message.channel.send('Error: {}'.format(e))
