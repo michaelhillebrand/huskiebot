@@ -20,7 +20,11 @@ from tasks.presence_changer import PresenceChanger
 
 if __name__ == '__main__':
     # Config
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename='bot.log',
+                        level=logging.INFO,
+                        format='[%(asctime)s] [%(levelname)s] %(message)s',
+                        datefmt='%m/%d/%Y %I:%M:%S %p'
+                        )
     dotenv.load_dotenv()
     DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 

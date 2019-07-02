@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import logging
 import os
 
 import discord
@@ -18,9 +19,8 @@ class GruNosePoster(BaseTask):
         while True:
             now = datetime.datetime.now()
             if now.hour == 20:
-                print("It's 8:00pm!")  # TODO add to log
                 try:
-                    await self.channel.send(file=discord.File(os.path.join(BASE_PATH, 'gru/{}.png'.format(now.date()))))
-                except FileNotFoundError:
-                    pass  # TODO log failure
+                    await self.channel.send(file=discord.File(os.path.join(BASE_PATH, 'ygru/{}.png'.format(now.date()))))
+                except FileNotFoundError as e:
+                    logging.error("Failed to post Gru nose picture: {}".format(e))
             await asyncio.sleep(3600)  # check every hour

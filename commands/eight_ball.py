@@ -45,8 +45,8 @@ class EightBall(BaseCommand):
             A randomly selected answer
 
         """
-        content = message.content.split(' ')
-        if not len(content) >= 2 or content[-1][-1] != '?':
-            await message.channel.send('You need to ask a question')
-        else:
+        args = message.content.split(' ')[1:]
+        if len(args) >= 1 and args[-1][-1] != '?':
             await message.channel.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
+        else:
+            await message.channel.send('You need to ask a question')
