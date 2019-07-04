@@ -121,8 +121,14 @@ class DeepFry(BaseCommand):
                 for attachment in message.attachments:
                     response = requests.get(attachment.url)
                     if response.status_code == 200:
-                        file = self.process_image(Image.open(BytesIO(response.content)), flares=flares)
-                    await message.channel.send(file=discord.File(file.name))
+                        try:
+                            file = self.process_image(Image.open(BytesIO(response.content)), flares=flares)
+                        except OSError:
+                            await message.channel.send('I can\'t deep fry that file')
+                        else:
+                            await message.channel.send(file=discord.File(file.name))
+                    else:
+                        await message.channel.send('I could not download your file')
         elif len(args) == 1:
             try:
                 file = self.process_image(Image.open(MEDIA_PATH + '{}.jpg'.format(args[0])), flares=flares)

@@ -23,7 +23,7 @@ class HuskieBot(discord.Client):
     async def add_commands(self, commands):
         """
         Adds commands to HuskieBot's list
-        :param commands:
+        :param commands: iterable
         :return None:
         """
         self.commands.update({command.trigger: command(self) for command in commands})
@@ -31,7 +31,7 @@ class HuskieBot(discord.Client):
     async def add_tasks(self, tasks):
         """
         Adds tasks to HuskieBot's list
-        :param tasks:
+        :param tasks: iterable
         :return None:
         """
         initialized_tasks = {task.id: task(self) for task in tasks}
@@ -53,7 +53,7 @@ class HuskieBot(discord.Client):
     async def on_message(self, message):
         """
         Receives and processes message
-        :param message:
+        :param message: Discord.Message
         :return None:
         """
         # we do not want the bot to reply to itself
