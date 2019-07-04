@@ -10,17 +10,19 @@ Summary line.
 
 Extended description of function. (Optional)
 
-Parameters
-----------
-arg1 : int
-    Description of arg1
-arg2 : str
-    Description of arg2
-
-Returns
--------
-int
-    Description of return value
-
+:param {paramter_name}: Type
+:return Type: 
 """
+```
+## Example
+```
+def add(num1, num2):
+    """
+    adds 2 numbers
+    
+    :param num1: Int
+    :param num2: Int
+    :return Int:
+    """
+    return num1 + num2
 ```
