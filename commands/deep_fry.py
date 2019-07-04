@@ -123,11 +123,11 @@ class DeepFry(BaseCommand):
                     if response.status_code == 200:
                         file = self.process_image(Image.open(BytesIO(response.content)), flares=flares)
                     await message.channel.send(file=discord.File(file.name))
-        elif args == 1:
+        elif len(args) == 1:
             try:
-                file = self.process_image(Image.open(MEDIA_PATH, '/{}.jpg'.format(args[0])), flares=flares)
+                file = self.process_image(Image.open(MEDIA_PATH + '{}.jpg'.format(args[0])), flares=flares)
                 await message.channel.send(file=discord.File(file.name))
             except IOError:
-                await message.channel.send('That is not a valid meme index number')
+                await message.channel.send('That is not a valid meme\'s number')
         else:
             await message.channel.send('There is nothing to deep fry')
