@@ -4,6 +4,7 @@ import discord
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 MEDIA_PATH = os.path.join(BASE_PATH, 'media/')
+STATIC_PATH = os.path.join(BASE_PATH, 'static/')
 if not os.path.exists(MEDIA_PATH):
     os.makedirs(MEDIA_PATH)
 
