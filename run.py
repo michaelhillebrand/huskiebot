@@ -12,7 +12,7 @@ from commands.dm_command import DMCommand
 from commands.eight_ball import EightBall
 from commands.invite_bot import InviteBot, DisconnectBot
 from commands.ping import Ping
-from commands.pocket_sand import PocketSand
+from tasks.pocket_sand import DaleAttack
 from commands.rps import RockPaperScissors
 from commands.shutup_will import ShutupWill
 from discord_bot import HuskieBot
@@ -27,6 +27,7 @@ if __name__ == '__main__':
     DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
     client = HuskieBot(commands=[
+
         EightBall,
         DiceRoll,
         ShutupWill,
@@ -36,10 +37,10 @@ if __name__ == '__main__':
         DisconnectBot,
         Ping,
         DMCommand,
-        PocketSand,
     ], tasks=[
         GruNosePoster,
         ChatModerator,
         PresenceChanger,
+        DaleAttack,
     ])
     client.run(DISCORD_BOT_TOKEN)
