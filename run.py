@@ -8,6 +8,7 @@ import dotenv
 # Local libraries
 from commands.dank_meme_poster import DankMemePoster
 from commands.dice_roll import DiceRoll
+from commands.dm_command import DMCommand
 from commands.eight_ball import EightBall
 from commands.invite_bot import InviteBot, DisconnectBot
 from commands.ping import Ping
@@ -33,6 +34,7 @@ if __name__ == '__main__':
         InviteBot,
         DisconnectBot,
         Ping,
+        DMCommand,
     ], tasks=[
         GruNosePoster,
         ChatModerator,
