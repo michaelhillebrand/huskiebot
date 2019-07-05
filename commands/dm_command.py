@@ -7,16 +7,10 @@ class DMCommand(BaseCommand):
 
     async def command(self, message):
         """
-        HuskieBot will tell all that the DMs word is law
+        Command to let all know that the DM is god
 
-        Parameters
-        ----------
-        message : discord.Message
 
-        Returns
-        -------
-        str
-            The DMs word is law and cannot be overruled
-
+        :param message: discord.Message
+        :return: str
         """
         await message.channel.send('The DMs word is law and cannot be overruled')
