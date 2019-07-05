@@ -13,4 +13,4 @@ class DMCommand(BaseCommand):
         :param message: discord.Message
         :return: str
         """
-        await message.channel.send('The DMs word is law and cannot be overruled')
+        await message.channel.send("The DMs word is law and cannot be overruled, I tell you h'what")
