@@ -9,8 +9,7 @@ class DMCommand(BaseCommand):
         """
         Command to let all know that the DM is god
 
-
         :param message: discord.Message
-        :return: str
+        :return str:
         """
         await message.channel.send("The DMs word is law and cannot be overruled, I tell you h'what")
