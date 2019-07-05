@@ -11,6 +11,7 @@ from commands.dice_roll import DiceRoll
 from commands.eight_ball import EightBall
 from commands.invite_bot import InviteBot, DisconnectBot
 from commands.ping import Ping
+from commands.poll import Poll
 from commands.rps import RockPaperScissors
 from commands.shutup_will import ShutupWill
 from discord_bot import HuskieBot
@@ -33,6 +34,7 @@ if __name__ == '__main__':
         InviteBot,
         DisconnectBot,
         Ping,
+        Poll,
     ], tasks=[
         GruNosePoster,
         ChatModerator,

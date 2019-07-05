@@ -52,6 +52,7 @@ class HuskieBot(discord.Client):
     async def on_message(self, message):
         """
         Receives and processes message
+
         :param message:
         :return None:
         """

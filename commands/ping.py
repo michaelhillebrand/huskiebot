@@ -7,8 +7,6 @@ class Ping(BaseCommand):
     trigger = 'ping'
     description = 'HuskieBot will delete the message immediately'
 
-    will = None
-
     async def command(self, message):
         """
         HuskieBot will delete the message immediately

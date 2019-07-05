@@ -7,6 +7,9 @@ class ShutupWill(BaseCommand):
 
     will = None
 
+    async def on_ready(self):
+        self.will = self.client.get_user(187364654455062528)
+
     async def command(self, message):
         """
         HuskieBot tells Will to shutup
@@ -21,6 +24,4 @@ class ShutupWill(BaseCommand):
             Will's User mention
 
         """
-        if not self.will:
-            self.will = self.client.get_user(187364654455062528)
         await message.channel.send('{} Shut up!'.format(self.will.mention))
