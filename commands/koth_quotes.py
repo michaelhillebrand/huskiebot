@@ -30,7 +30,6 @@ class KOTHQuotes(BaseCommand):
         :param message: discord.Message
         :return str:
         """
-        message_sent = False
         try:
             args = message.content.split(' ')[1:]
 
@@ -39,14 +38,13 @@ class KOTHQuotes(BaseCommand):
             elif len(args) == 1:
                 if args[0] == 'count':
                     await message.channel.send("I have {} quotes".format(len(self.CHOICES)))
-                    message_sent = True
+                    return
                 elif int(args[0]) <= 0:
                     raise RuntimeError
                 else:
                     index = int(args[0]) - 1
             else:
                 index = randint(0, len(self.CHOICES) - 1)
-            if not message_sent:
-                await message.channel.send(self.CHOICES[index])
+            await message.channel.send(self.CHOICES[index])
         except(ValueError, RuntimeError, IndexError):
             await message.channel.send('That is not a valid quote')
