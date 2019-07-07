@@ -20,7 +20,7 @@ class KOTHQuotes(BaseCommand):
 
     async def command(self, message):
         """
-        Command to let all know that the DM is god
+        Command to say a quote from King of the Hill
 
         :param message: discord.Message
         :return str:
