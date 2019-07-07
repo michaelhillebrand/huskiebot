@@ -16,6 +16,11 @@ class KOTHQuotes(BaseCommand):
         "\"Why would anyone do drugs when they could just mow a lawn?\"",
         "\"Now you listen to me, mister. I work for a livin', and I mean real work, not writin' down gobbledegook! I provide the people of this community with propane and propane accessories. Oh, when I think of all my hard earned tax dollars goin' ta pay a bunch of little twig-boy bureaucrats like you, it just makes me wanna ... oh ... oh God\"",
         "\"God dang it, Bobby!\""
+        "\" We of the Order of the Straight Arrow call upon the spirit Wematanye, protector of the sacred ground that brings us cool water to drink and energy-efficient clean-burning propane gas for all our sacred heating and cooking needs. Wematanye says, respect the earth! She's ours, by God, our taxes pay for Her. Also, it says here you gotta love all Her creatures. Let's see...oh, here we go: Though we walk through the valley of the shadow of death, you're gonna recommend us to the spirit in the sky, with liberty and justice for all. Wematanye is with you, and with Texas. Amen.\"",
+        "\"I am the mack daddy of Heimlich County, I play it straight up, yo. You get the hell outta my 'hood!\"",
+        "\"Dang it, I am sick and tired of everyone's asinine ideas about me. I'm not a redneck, and I'm not some Hollywood jerk. I'm something else entirely. I'm... I'm complicated!\"",
+        "\"Firm but with a little give. Yup, these are medium-rare.\"",
+        "\"You know whats not cool Bobby? Hell.\""
     ]
 
     async def command(self, message):
@@ -25,4 +30,23 @@ class KOTHQuotes(BaseCommand):
         :param message: discord.Message
         :return str:
         """
-        await message.channel.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
+        message_sent = False
+        try:
+            args = message.content.split(' ')[1:]
+
+            if len(args) > 1:
+                raise RuntimeError
+            elif len(args) == 1:
+                if args[0] == 'count':
+                    await message.channel.send("I have {} quotes".format(len(self.CHOICES)))
+                    message_sent = True
+                elif int(args[0]) <= 0:
+                    raise RuntimeError
+                else:
+                    index = int(args[0]) - 1
+            else:
+                index = randint(0, len(self.CHOICES) - 1)
+            if not message_sent:
+                await message.channel.send(self.CHOICES[index])
+        except(ValueError, RuntimeError, IndexError):
+            await message.channel.send('That is not a valid quote')
