@@ -6,6 +6,7 @@ import os
 import dotenv
 
 # Local libraries
+from cogs.example import Example
 from commands.dank_meme_poster import DankMemePoster
 from commands.dice_roll import DiceRoll
 from commands.dm_command import DMCommand
@@ -15,17 +16,27 @@ from commands.ping import Ping
 from commands.rps import RockPaperScissors
 from commands.shutup_will import ShutupWill
 from commands.koth_quotes import KOTHQuotes
-from discord_bot import HuskieBot
+from discord_bot import HuskieBot, HuskieBotCogs
 from tasks.chat_moderate import ChatModerator
 from tasks.gru_nose import GruNosePoster
 from tasks.presence_changer import PresenceChanger
 
-if __name__ == '__main__':
-    # Config
-    logging.basicConfig(level=logging.INFO)
-    dotenv.load_dotenv()
-    DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+def useCogs(DISCORD_BOT_TOKEN):
+    bot = HuskieBotCogs(
+        command_prefix='!',
+        description="test bot"
+    )
 
+    cogs = [
+        Example
+    ]
+
+    for cog in cogs:
+        bot.add_cog(cog(bot))
+
+    bot.run(DISCORD_BOT_TOKEN)
+
+def useOriginal(DISCORD_BOT_TOKEN):
     client = HuskieBot(commands=[
         EightBall,
         DiceRoll,
@@ -43,3 +54,12 @@ if __name__ == '__main__':
         PresenceChanger,
     ])
     client.run(DISCORD_BOT_TOKEN)
+
+if __name__ == '__main__':
+    # Config
+    logging.basicConfig(level=logging.INFO)
+    dotenv.load_dotenv()
+    DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+
+    useCogs(DISCORD_BOT_TOKEN)
+    # useOriginal(DISCORD_BOT_TOKEN)
