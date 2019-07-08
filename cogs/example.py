@@ -36,6 +36,6 @@ class Example(commands.Cog):
         await ctx.send('Yes, the bot is cool.')
 
     @commands.command()
-    async def ping(self, ctx):
-        """Responds with "pong" to prove that commands work"""
-        await ctx.send('pong')
+    async def tick(self, ctx):
+        """Responds with "tock" to prove that commands work"""
+        await ctx.send('tock')
