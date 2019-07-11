@@ -8,7 +8,7 @@ class DiceRoll(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def roll(self, ctx):
+    async def roll(self, ctx, sides_count: int):
         """
         HuskieBot will roll a dice with n sides
 
@@ -22,11 +22,8 @@ class DiceRoll(commands.Cog):
             Random number from dice roll
 
         """
-        args = ctx.message.content.split(' ')[1:]
-        if len(args) != 1:
-            await ctx.send('That is not a valid roll')
-        else:
-            try:
-                await ctx.send(randint(1, int(args[0])))
-            except ValueError:
-                await ctx.send('That is not a valid roll')
+        await ctx.send(randint(1, sides_count))
+
+    @roll.error
+    async def on_roll_error(self, ctx, error):
+        await ctx.send('That is not a valid roll')
