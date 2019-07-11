@@ -6,8 +6,8 @@ import os
 import dotenv
 
 # Local libraries
-from cogs.example import Example
 from cogs.dungeonmaster import DungeonMaster
+from cogs.example import Example
 from cogs.ping import Ping
 from cogs.quotes import Quotes
 from cogs.shutup_will import ShutupWill
