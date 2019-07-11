@@ -8,6 +8,7 @@ import dotenv
 # Local libraries
 from cogs.example import Example
 from cogs.dungeonmaster import DungeonMaster
+from cogs.quotes import Quotes
 from commands.dank_meme_poster import DankMemePoster
 from commands.dice_roll import DiceRoll
 from commands.dm_command import DMCommand
@@ -30,7 +31,8 @@ def useCogs(DISCORD_BOT_TOKEN):
 
     cogs = [
         Example,
-        DungeonMaster
+        DungeonMaster,
+        Quotes
     ]
 
     for cog in cogs:
