@@ -5,9 +5,6 @@ import discord
 from discord.ext import commands
 
 class Quotes(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     KING_OF_THE_HILL_QUOTES = [
         "What the hell kind of country is this where I can only hate a man if he's white?",
         "What? No, I sell propane!",
@@ -26,6 +23,9 @@ class Quotes(commands.Cog):
         "You know whats not cool Bobby? Hell.",
         "Do I Look Like I Know What a JPEG is?"
     ]
+
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.group(invoke_without_command=True)
     async def quote(self, ctx, index: typing.Optional[int] = None):

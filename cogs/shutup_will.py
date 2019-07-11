@@ -2,10 +2,10 @@ import discord
 from discord.ext import commands
 
 class ShutupWill(commands.Cog):
+    will = None
+    
     def __init__(self, bot):
         self.bot = bot
-
-    will = None
 
     @commands.command()
     async def shutup(self, ctx):

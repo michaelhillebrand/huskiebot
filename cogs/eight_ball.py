@@ -4,9 +4,6 @@ import discord
 from discord.ext import commands
 
 class EightBall(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     CHOICES = [
         'It is certain',
         'It is decidedly so',
@@ -29,6 +26,9 @@ class EightBall(commands.Cog):
         'Outlook not so good',
         'Very doubtful'
     ]
+
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command(aliases=["8ball"])
     async def eight_ball(self, ctx, question: str):
