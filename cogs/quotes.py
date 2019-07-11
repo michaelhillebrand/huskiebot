@@ -1,4 +1,5 @@
 from random import randint
+import typing
 
 import discord
 from discord.ext import commands
@@ -26,29 +27,22 @@ class Quotes(commands.Cog):
         "Do I Look Like I Know What a JPEG is?"
     ]
 
-    @commands.command()
-    async def quote(self, ctx, *args):
-        """
-        Command to say a quote from King of the Hill
-
-        :param message: discord.Message
-        :return str:
-        """
-        try:
-            args = ctx.message.content.split(' ')[1:]
-
-            if len(args) > 1:
-                raise RuntimeError
-            elif len(args) == 1:
-                if args[0] == 'count':
-                    await ctx.send("I have {} quotes".format(len(self.KING_OF_THE_HILL_QUOTES)))
-                    return
-                elif int(args[0]) <= 0:
-                    raise RuntimeError
+    @commands.group(invoke_without_command=True)
+    async def quote(self, ctx, index: typing.Optional[int] = None):
+        """HuskieBot will say a quote from the best show ever made: King of the Hill"""
+        if ctx.invoked_subcommand is None:
+            try:
+                if index == None:
+                    index = randint(0, len(self.KING_OF_THE_HILL_QUOTES) - 1)
+                elif index <= 0:
+                    raise ValueError
                 else:
-                    index = int(args[0]) - 1
-            else:
-                index = randint(0, len(self.KING_OF_THE_HILL_QUOTES) - 1)
-            await ctx.send(self.KING_OF_THE_HILL_QUOTES[index])
-        except(ValueError, RuntimeError, IndexError):
-            await ctx.send('That is not a valid quote')
+                    index = index - 1
+                await ctx.send(self.KING_OF_THE_HILL_QUOTES[index])
+            except(ValueError, RuntimeError, IndexError):
+                await ctx.send('That is not a valid quote')
+
+    @quote.command(name='count')
+    async def quote_count(self, ctx):
+        """HuskieBot will say how many quotes it current has from the best show ever made: King of the Hill"""
+        await ctx.send("I have {} quotes".format(len(self.KING_OF_THE_HILL_QUOTES)))
