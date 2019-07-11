@@ -11,13 +11,11 @@ from cogs.dungeonmaster import DungeonMaster
 from cogs.quotes import Quotes
 from commands.dank_meme_poster import DankMemePoster
 from commands.dice_roll import DiceRoll
-from commands.dm_command import DMCommand
 from commands.eight_ball import EightBall
 from commands.invite_bot import InviteBot, DisconnectBot
 from commands.ping import Ping
 from commands.rps import RockPaperScissors
 from commands.shutup_will import ShutupWill
-from commands.koth_quotes import KOTHQuotes
 from discord_bot import HuskieBot, HuskieBotCogs
 from tasks.chat_moderate import ChatModerator
 from tasks.gru_nose import GruNosePoster
@@ -50,8 +48,6 @@ def useOriginal(DISCORD_BOT_TOKEN):
         InviteBot,
         DisconnectBot,
         Ping,
-        DMCommand,
-        KOTHQuotes,
     ], tasks=[
         GruNosePoster,
         ChatModerator,
