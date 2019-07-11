@@ -31,7 +31,7 @@ class EightBall(commands.Cog):
     ]
 
     @commands.command(aliases=["8ball"])
-    async def eight_ball(self, ctx):
+    async def eight_ball(self, ctx, question: str):
         """
         User asks the bot a question and returns an answer
 
@@ -46,8 +46,12 @@ class EightBall(commands.Cog):
             A randomly selected answer
 
         """
-        content = ctx.message.content.split(' ')
-        if not len(content) >= 2 or content[-1][-1] != '?':
+
+        if question[-1] != '?':
             await ctx.send('You need to ask a question')
         else:
             await ctx.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
+
+    @eight_ball.error
+    async def on_eight_ball_error(self, ctx, error):
+        await ctx.send('You need to ask a question')
