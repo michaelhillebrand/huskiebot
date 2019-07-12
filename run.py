@@ -15,7 +15,7 @@ from cogs.quotes import Quotes
 from cogs.rps import RockPaperScissors
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
-from commands.dank_meme_poster import DankMemePoster
+from cogs.dank_memes import DankMemes
 from discord_bot import HuskieBot, HuskieBotCogs
 from tasks.chat_moderate import ChatModerator
 from tasks.gru_nose import GruNosePoster
@@ -36,7 +36,8 @@ def useCogs(DISCORD_BOT_TOKEN):
         EightBall,
         DiceRoll,
         RockPaperScissors,
-        Voice
+        Voice,
+        DankMemes
     ]
 
     for cog in cogs:
@@ -45,9 +46,7 @@ def useCogs(DISCORD_BOT_TOKEN):
     bot.run(DISCORD_BOT_TOKEN)
 
 def useOriginal(DISCORD_BOT_TOKEN):
-    client = HuskieBot(commands=[
-        DankMemePoster,
-    ], tasks=[
+    client = HuskieBot(commands=[], tasks=[
         GruNosePoster,
         ChatModerator,
         PresenceChanger,
