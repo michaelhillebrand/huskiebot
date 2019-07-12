@@ -37,7 +37,8 @@ def useCogs(DISCORD_BOT_TOKEN):
         DiceRoll,
         RockPaperScissors,
         Voice,
-        DankMemes
+        DankMemes,
+        PresenceChanger
     ]
 
     for cog in cogs:
