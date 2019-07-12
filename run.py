@@ -6,20 +6,20 @@ import os
 import dotenv
 
 # Local libraries
+from cogs.chat_moderate import ChatModerator
 from cogs.dice_roll import DiceRoll
 from cogs.dungeonmaster import DungeonMaster
 from cogs.eight_ball import EightBall
 from cogs.example import Example
+from cogs.gru_nose import GruNosePoster
 from cogs.ping import Ping
+from cogs.presence_changer import PresenceChanger
 from cogs.quotes import Quotes
 from cogs.rps import RockPaperScissors
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
 from cogs.dank_memes import DankMemes
 from discord_bot import HuskieBot, HuskieBotCogs
-from tasks.chat_moderate import ChatModerator
-from tasks.gru_nose import GruNosePoster
-from tasks.presence_changer import PresenceChanger
 
 def useCogs(DISCORD_BOT_TOKEN):
     bot = HuskieBotCogs(
