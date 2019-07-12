@@ -14,8 +14,8 @@ from cogs.ping import Ping
 from cogs.quotes import Quotes
 from cogs.rps import RockPaperScissors
 from cogs.shutup_will import ShutupWill
+from cogs.voice import Voice
 from commands.dank_meme_poster import DankMemePoster
-from commands.invite_bot import InviteBot, DisconnectBot
 from discord_bot import HuskieBot, HuskieBotCogs
 from tasks.chat_moderate import ChatModerator
 from tasks.gru_nose import GruNosePoster
@@ -35,7 +35,8 @@ def useCogs(DISCORD_BOT_TOKEN):
         Ping,
         EightBall,
         DiceRoll,
-        RockPaperScissors
+        RockPaperScissors,
+        Voice
     ]
 
     for cog in cogs:
@@ -46,8 +47,6 @@ def useCogs(DISCORD_BOT_TOKEN):
 def useOriginal(DISCORD_BOT_TOKEN):
     client = HuskieBot(commands=[
         DankMemePoster,
-        InviteBot,
-        DisconnectBot,
     ], tasks=[
         GruNosePoster,
         ChatModerator,
