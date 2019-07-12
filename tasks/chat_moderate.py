@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import discord
 from discord.ext import tasks, commands
@@ -11,7 +12,7 @@ class ChatModerator(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def purge(self, ctx):
+    async def purge(self, ctx, purge_limit: typing.Optional[int] = 5):
         """
         HuskieBot will clear n messages from channel
 
@@ -24,19 +25,17 @@ class ChatModerator(commands.Cog):
         None
 
         """
+        min_purge_limit = 1
+
         if ctx.channel.type == discord.ChannelType.private:
             await ctx.send('I can\'t purge a DM Channel')
         elif ctx.author.guild_permissions.administrator:
             try:
-                args = ctx.message.content.split(' ')[1:]
-                if len(args) > 1:
+                if purge_limit < min_purge_limit:
                     raise ValueError
-                elif len(args) == 1:
-                    limit = int(args[0])
-                else:
-                    limit = 100
-                logging.info("Purging the last {limit} message from channel: {channel}".format(limit = limit, channel = ctx.channel.name))
-                await ctx.channel.purge(limit=limit + 1)
+
+                logging.info("Purging the purge command and the last {limit} message(s) from channel: {channel}".format(limit = purge_limit, channel = ctx.channel.name))
+                await ctx.channel.purge(limit=purge_limit + 1)
             except ValueError:
                 await ctx.send('That is not a valid number')
             except discord.errors.Forbidden:
