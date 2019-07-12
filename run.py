@@ -39,7 +39,8 @@ def useCogs(DISCORD_BOT_TOKEN):
         Voice,
         DankMemes,
         PresenceChanger,
-        ChatModerator
+        ChatModerator,
+        GruNosePoster
     ]
 
     for cog in cogs:
@@ -48,9 +49,7 @@ def useCogs(DISCORD_BOT_TOKEN):
     bot.run(DISCORD_BOT_TOKEN)
 
 def useOriginal(DISCORD_BOT_TOKEN):
-    client = HuskieBot(commands=[], tasks=[
-        GruNosePoster,
-    ])
+    client = HuskieBot(commands=[], tasks=[])
     client.run(DISCORD_BOT_TOKEN)
 
 if __name__ == '__main__':
