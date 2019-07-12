@@ -23,11 +23,13 @@ class GruNosePoster(commands.Cog):
         channel = self.bot.get_channel(self.channel_id)
         now = datetime.datetime.now()
         if now.hour == 20:
-            print("It's 8:00pm!")  # TODO add to log
+            logging.info("It's 8:00pm! Attempting to post the latest gru nose pic")  # TODO add to log
+            gru_nose_filepath = os.path.join(BASE_PATH, 'gru/{}.png'.format(now.date()))
             try:
-                await channel.send(file=discord.File(os.path.join(BASE_PATH, 'gru/{}.png'.format(now.date()))))
-            except FileNotFoundError:
-                pass  # TODO log failure
+                logging.info("Posting file: {file}".format(file = gru_nose_filepath))
+                await channel.send(file=discord.File(gru_nose_filepath))
+            except FileNotFoundError as e:
+                logging.error("Failed to find file: {}".format(e.filename))
 
     @gru_nose_poster.before_loop
     async def before_gru_nose_poster(self):
