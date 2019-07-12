@@ -19,12 +19,12 @@ from cogs.quotes import Quotes
 from cogs.rps import RockPaperScissors
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
-from discord_bot import HuskieBot, HuskieBotCogs
+from discord_bot import HuskieBot
 
-def useCogs(DISCORD_BOT_TOKEN):
-    bot = HuskieBotCogs(
+def setup_bot():
+    bot = HuskieBot(
         command_prefix='!',
-        description="test bot"
+        description="HuskieBot is a collection of miscellaneous commands, tasks, and tools used on Michael's Discord guild"
     )
 
     cogs = [
@@ -46,11 +46,7 @@ def useCogs(DISCORD_BOT_TOKEN):
     for cog in cogs:
         bot.add_cog(cog(bot))
 
-    bot.run(DISCORD_BOT_TOKEN)
-
-def useOriginal(DISCORD_BOT_TOKEN):
-    client = HuskieBot(commands=[], tasks=[])
-    client.run(DISCORD_BOT_TOKEN)
+    return bot
 
 if __name__ == '__main__':
     # Config
@@ -58,5 +54,5 @@ if __name__ == '__main__':
     dotenv.load_dotenv()
     DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
-    useCogs(DISCORD_BOT_TOKEN)
-    # useOriginal(DISCORD_BOT_TOKEN)
+    bot = setup_bot()
+    bot.run(DISCORD_BOT_TOKEN)
