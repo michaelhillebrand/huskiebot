@@ -31,6 +31,7 @@ class GruNosePoster(commands.Cog):
             except FileNotFoundError as e:
                 logging.error("Failed to find file: {}".format(e.filename))
 
+    # TODO: Switch this to happen in a bot.event on_ready function instead
     @gru_nose_poster.before_loop
     async def before_gru_nose_poster(self):
         logging.info('Waiting for bot to be ready...')
