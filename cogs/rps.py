@@ -1,14 +1,10 @@
+import math
 from random import randint
 
-import math
+import discord
+from discord.ext import commands
 
-from commands.base import BaseCommand
-
-
-class RockPaperScissors(BaseCommand):
-    trigger = 'rps'
-    description = 'Starts a Rock, Paper, Scissors game with HuskieBot'
-
+class RockPaperScissors(commands.Cog):
     stats = {}
 
     ROCK = 'rock'
@@ -17,12 +13,11 @@ class RockPaperScissors(BaseCommand):
 
     CHOICES = [ROCK, PAPER, SCISSORS]
 
-    def __init__(self, client=None) -> None:
-        self.will = None
-        super().__init__(client)
+    def __init__(self, bot):
+        self.bot = bot
 
-    async def _play(self, message, move):
-        if self.stats.get(message.author.id, None):
+    async def _play(self, ctx, move):
+        if self.stats.get(ctx.author.id, None):
             bot_move = self.CHOICES[randint(0, len(self.CHOICES) - 1)]
             if bot_move == move:
                 result = 0
@@ -36,7 +31,7 @@ class RockPaperScissors(BaseCommand):
                 result = -1
             else:
                 result = -2
-            game = self.stats[message.author.id]
+            game = self.stats[ctx.author.id]
             game['turn'] += 1
             game['history'].append({'bot': bot_move, 'user': move, 'result': result})
             if result == 1:
@@ -45,13 +40,14 @@ class RockPaperScissors(BaseCommand):
                 game['bot_score'] += 1
             elif result == 0:
                 game['ties'] += 1
+            # TODO: Consider how to improve this in cases of even number for best_of. Right now, with a best_of = 4, the game ends if one side gets to 2 wins, even if there are stil 2 turns left so thee's a possibility of a tie
             if max(game['user_score'], game['bot_score']) >= math.ceil(game['best_of'] / 2):
-                await message.channel.send('{user}\t\t\tHuskieBot\n'
+                await ctx.send('{user}\t\t\tHuskieBot\n'
                                            '{user_move}\tvs.\t{bot_move}\n'
                                            'GAME OVER\n'
                                            'Final Score: {user_score}-{bot_score}-{ties}\n\n'
                                            'Want to play again?'
-                                           .format(user=message.author.mention,
+                                           .format(user=ctx.author.mention,
                                                    user_move=move.capitalize(),
                                                    bot_move=bot_move.capitalize(),
                                                    user_score=game['user_score'],
@@ -59,12 +55,12 @@ class RockPaperScissors(BaseCommand):
                                                    ties=game['ties']
                                                    )
                                            )
-                self.stats.pop(message.author.id, None)
+                self.stats.pop(ctx.author.id, None)
             else:
-                await message.channel.send('{user}\t\t\tHuskieBot\n'
+                await ctx.send('{user}\t\t\tHuskieBot\n'
                                            '{user_move}\tvs.\t{bot_move}\n'
                                            'Current Score: {user_score}-{bot_score}-{ties}'
-                                           .format(user=message.author.mention,
+                                           .format(user=ctx.author.mention,
                                                    user_move=move.capitalize(),
                                                    bot_move=bot_move.capitalize(),
                                                    user_score=game['user_score'],
@@ -73,8 +69,8 @@ class RockPaperScissors(BaseCommand):
                                                    )
                                            )
 
-    def _initialize(self, message, best_of):
-        self.stats.update({message.author.id: {
+    def _initialize(self, ctx, best_of):
+        self.stats.update({ctx.author.id: {
             'turn': 1,
             'history': [],
             'user_score': 0,
@@ -83,7 +79,8 @@ class RockPaperScissors(BaseCommand):
             'best_of': best_of,
         }})
 
-    async def command(self, message):
+    @commands.command()
+    async def rps(self, ctx):
         """
         HuskieBot will play a game of ROCK, PAPER, Scissors with user
 
@@ -96,11 +93,11 @@ class RockPaperScissors(BaseCommand):
         str
 
         """
-        args = message.content.split(' ')[1:]
+        args = ctx.message.content.split(' ')[1:]
         if len(args) == 0:
-            if self.stats.get(message.author.id, None):
-                game = self.stats[message.author.id]
-                await message.channel.send(
+            if self.stats.get(ctx.author.id, None):
+                game = self.stats[ctx.author.id]
+                await ctx.send(
                     'I already have a game started with you.\n'
                     'We are on turn {} with a best of {}.\n'
                     'The current score is {}-{}-{}'.format(game['turn'],
@@ -109,21 +106,21 @@ class RockPaperScissors(BaseCommand):
                                                            game['bot_score'],
                                                            game['ties']))
             else:
-                self._initialize(message, 3)
-                await message.channel.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
+                self._initialize(ctx, 3)
+                await ctx.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
         elif len(args) == 1:
             try:
-                self._initialize(message, int(args[-1]))
-                await message.channel.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
+                self._initialize(ctx, int(args[-1]))
+                await ctx.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
             except ValueError:
-                if not self.stats.get(message.author.id, None):
-                    await message.channel.send('We don\'t have a game going. '
-                                               'Start a game by using the !{} command'.format(self.trigger))
+                if not self.stats.get(ctx.author.id, None):
+                    await ctx.send('We don\'t have a game going. '
+                                               'Start a game by using the !{} command'.format(ctx.command))
                 else:
                     if args[-1].lower() in self.CHOICES:
-                        await self._play(message, args[-1].lower())
+                        await self._play(ctx, args[-1].lower())
                     else:
-                        await message.channel.send('That is not a valid move')
+                        await ctx.send('That is not a valid move')
 
         else:
-            await message.channel.send('That is not a valid argument')
+            await ctx.send('That is not a valid argument')

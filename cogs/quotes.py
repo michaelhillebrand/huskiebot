@@ -1,12 +1,11 @@
 from random import randint
-from commands.base import BaseCommand
+import typing
 
+import discord
+from discord.ext import commands
 
-class KOTHQuotes(BaseCommand):
-    trigger = 'quote'
-    description = 'HuskieBot will say a quote from the best show ever made King of the Hill'
-
-    CHOICES = [
+class Quotes(commands.Cog):
+    KING_OF_THE_HILL_QUOTES = [
         "What the hell kind of country is this where I can only hate a man if he's white?",
         "What? No, I sell propane!",
         "Soccer was invented by European ladies to keep them busy while their husbands did the cooking",
@@ -25,28 +24,25 @@ class KOTHQuotes(BaseCommand):
         "Do I Look Like I Know What a JPEG is?"
     ]
 
-    async def command(self, message):
-        """
-        Command to say a quote from King of the Hill
+    def __init__(self, bot):
+        self.bot = bot
 
-        :param message: discord.Message
-        :return str:
-        """
-        try:
-            args = message.content.split(' ')[1:]
-
-            if len(args) > 1:
-                raise RuntimeError
-            elif len(args) == 1:
-                if args[0] == 'count':
-                    await message.channel.send("I have {} quotes".format(len(self.CHOICES)))
-                    return
-                elif int(args[0]) <= 0:
-                    raise RuntimeError
+    @commands.group(invoke_without_command=True)
+    async def quote(self, ctx, index: typing.Optional[int] = None):
+        """HuskieBot will say a quote from the best show ever made: King of the Hill"""
+        if ctx.invoked_subcommand is None:
+            try:
+                if index == None:
+                    index = randint(0, len(self.KING_OF_THE_HILL_QUOTES) - 1)
+                elif index <= 0:
+                    raise ValueError
                 else:
-                    index = int(args[0]) - 1
-            else:
-                index = randint(0, len(self.CHOICES) - 1)
-            await message.channel.send(self.CHOICES[index])
-        except(ValueError, RuntimeError, IndexError):
-            await message.channel.send('That is not a valid quote')
+                    index = index - 1
+                await ctx.send(self.KING_OF_THE_HILL_QUOTES[index])
+            except(ValueError, RuntimeError, IndexError):
+                await ctx.send('That is not a valid quote')
+
+    @quote.command(name='count')
+    async def quote_count(self, ctx):
+        """HuskieBot will say how many quotes it current has from the best show ever made: King of the Hill"""
+        await ctx.send("I have {} quotes".format(len(self.KING_OF_THE_HILL_QUOTES)))

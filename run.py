@@ -6,19 +6,47 @@ import os
 import dotenv
 
 # Local libraries
-from commands.dank_meme_poster import DankMemePoster
-from commands.dice_roll import DiceRoll
-from commands.dm_command import DMCommand
-from commands.eight_ball import EightBall
-from commands.invite_bot import InviteBot, DisconnectBot
-from commands.ping import Ping
-from commands.rps import RockPaperScissors
-from commands.shutup_will import ShutupWill
-from commands.koth_quotes import KOTHQuotes
+from cogs.chat_moderate import ChatModerator
+from cogs.dank_memes import DankMemes
+from cogs.dice_roll import DiceRoll
+from cogs.dungeonmaster import DungeonMaster
+from cogs.eight_ball import EightBall
+from cogs.example import Example
+from cogs.gru_nose import GruNosePoster
+from cogs.ping import Ping
+from cogs.presence_changer import PresenceChanger
+from cogs.quotes import Quotes
+from cogs.rps import RockPaperScissors
+from cogs.shutup_will import ShutupWill
+from cogs.voice import Voice
 from discord_bot import HuskieBot
-from tasks.chat_moderate import ChatModerator
-from tasks.gru_nose import GruNosePoster
-from tasks.presence_changer import PresenceChanger
+
+def setup_bot():
+    bot = HuskieBot(
+        command_prefix='!',
+        description="HuskieBot is a collection of miscellaneous commands, tasks, and tools used on Michael's Discord guild"
+    )
+
+    cogs = [
+        Example,
+        DungeonMaster,
+        Quotes,
+        ShutupWill,
+        Ping,
+        EightBall,
+        DiceRoll,
+        RockPaperScissors,
+        Voice,
+        DankMemes,
+        PresenceChanger,
+        ChatModerator,
+        GruNosePoster
+    ]
+
+    for cog in cogs:
+        bot.add_cog(cog(bot))
+
+    return bot
 
 if __name__ == '__main__':
     # Config
@@ -26,20 +54,5 @@ if __name__ == '__main__':
     dotenv.load_dotenv()
     DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
-    client = HuskieBot(commands=[
-        EightBall,
-        DiceRoll,
-        ShutupWill,
-        RockPaperScissors,
-        DankMemePoster,
-        InviteBot,
-        DisconnectBot,
-        Ping,
-        DMCommand,
-        KOTHQuotes,
-    ], tasks=[
-        GruNosePoster,
-        ChatModerator,
-        PresenceChanger,
-    ])
-    client.run(DISCORD_BOT_TOKEN)
+    bot = setup_bot()
+    bot.run(DISCORD_BOT_TOKEN)

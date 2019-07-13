@@ -1,12 +1,9 @@
 from random import randint
 
-from commands.base import BaseCommand
+import discord
+from discord.ext import commands
 
-
-class EightBall(BaseCommand):
-    trigger = '8ball'
-    description = 'HuskieBot will answer your "yes or no" questions'
-
+class EightBall(commands.Cog):
     CHOICES = [
         'It is certain',
         'It is decidedly so',
@@ -30,7 +27,11 @@ class EightBall(BaseCommand):
         'Very doubtful'
     ]
 
-    async def command(self, message):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(aliases=["8ball"])
+    async def eight_ball(self, ctx, question: str):
         """
         User asks the bot a question and returns an answer
 
@@ -45,8 +46,12 @@ class EightBall(BaseCommand):
             A randomly selected answer
 
         """
-        content = message.content.split(' ')
-        if not len(content) >= 2 or content[-1][-1] != '?':
-            await message.channel.send('You need to ask a question')
+
+        if question[-1] != '?':
+            await ctx.send('You need to ask a question')
         else:
-            await message.channel.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
+            await ctx.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
+
+    @eight_ball.error
+    async def on_eight_ball_error(self, ctx, error):
+        await ctx.send('You need to ask a question')
