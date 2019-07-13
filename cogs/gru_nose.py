@@ -12,12 +12,12 @@ from cogs.base import BaseCog
 class GruNosePoster(BaseCog):
 
     def __init__(self, bot) -> None:
-        self.channel_id = os.getenv('DISCORD_BOT_TOKEN')
+        self.channel_id = os.getenv('GRU_NOSE_CHANNEL')
         self.channel = None
         if self.channel_id:
             self.gru_nose_poster.start()
         else:
-            logging.warning('No channel id was provided')
+            logging.warning('No channel id was provided for the Gru Nose Poster')
         super().__init__(bot)
 
     def cog_unload(self):
@@ -51,6 +51,5 @@ class GruNosePoster(BaseCog):
 
     @gru_nose_poster.before_loop
     async def before_gru_nose_poster(self):
-        logging.info('Waiting for bot to be ready...')
         await self.bot.wait_until_ready()
         self.channel = self.bot.get_channel(self.channel_id)

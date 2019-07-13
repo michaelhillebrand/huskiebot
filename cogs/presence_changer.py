@@ -57,8 +57,6 @@ class PresenceChanger(BaseCog):
         except IndexError:
             self.index = 0
 
-    # TODO: Switch this to happen in a bot.event on_ready function instead
     @presence_changer.before_loop
     async def before_presence_changer(self):
-        logging.info('Waiting for bot to be ready...')
         await self.bot.wait_until_ready()
