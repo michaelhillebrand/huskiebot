@@ -1,11 +1,10 @@
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class ShutupWill(commands.Cog):
+
+class ShutupWill(BaseCog):
     will = None
-    
-    def __init__(self, bot):
-        self.bot = bot
 
     @commands.command()
     async def shutup(self, ctx):

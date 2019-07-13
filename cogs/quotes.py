@@ -4,8 +4,10 @@ import typing
 
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class Quotes(commands.Cog):
+
+class Quotes(BaseCog):
     KOTH = [
         "What the hell kind of country is this where I can only hate a man if he's white?",
         "What? No, I sell propane!",
@@ -44,9 +46,6 @@ class Quotes(commands.Cog):
     SHOWS = {
         'koth': KOTH
     }
-
-    def __init__(self, bot):
-        self.bot = bot
 
     @commands.group(invoke_without_command=True)
     async def quote(self, ctx, show: typing.Optional[str] = None, index: typing.Optional[int] = None):

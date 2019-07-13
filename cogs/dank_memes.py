@@ -1,24 +1,20 @@
-import asyncio
+import logging
 import os
+import typing
 from io import BytesIO
 from random import randint
-from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
 import discord
-import requests
-import typing
-from discord.ext import commands
 from PIL import Image
-from requests import HTTPError
+from discord.ext import commands
 
-from discord_bot import MEDIA_PATH
+from cogs import MEDIA_PATH
+from cogs.base import BaseCog
+from utils.download import download
 
-#TODO finish
 
-class DankMemes(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+class DankMemes(BaseCog):
 
     async def _process_image(self, file):
         """
@@ -26,7 +22,7 @@ class DankMemes(commands.Cog):
 
         Parameters
         ----------
-        file : BytesIO
+        file : BytesIO / NamedTemporaryFile
 
         Returns
         -------
@@ -47,32 +43,25 @@ class DankMemes(commands.Cog):
                        optimize=True
                        )
 
-    async def _download(self, url):
+    async def _bulk_process(self, url):
         """
-        Downloads ZIP file from url
+        Helper function for the dankbulkupload command
 
         Parameters
         ----------
-        url : str
+        url : file to download
 
         Returns
         -------
-        ZipFile
-
+        int
+            the number of files extracted
         """
-        await self.bot.wait_until_ready()
-        r = requests.get(url, stream=True)
-        if r.status_code == 200:
-            with NamedTemporaryFile() as temp:
-                for chunk in r.iter_content(chunk_size=4096):
-                    if chunk:  # filter out keep-alive new chunks
-                        temp.write(chunk)
-                    await asyncio.sleep(0.01)  # allows HuskieBot to respond to other requests
-                temp.flush()
-                temp.seek(0)
-                return ZipFile(temp.name, 'r')
-        else:
-            raise HTTPError('Received a non 200 status code: {}'.format(r.status_code))
+        zip_file = ZipFile(await download(url))
+        file_count = len(zip_file.infolist())
+        for file in zip_file.infolist():
+            await self._process_image(BytesIO(zip_file.read(file.filename)))
+        zip_file.close()
+        return file_count
 
     @commands.command()
     async def dankbulkupload(self, ctx, url: typing.Optional[str]):
@@ -90,30 +79,25 @@ class DankMemes(commands.Cog):
 
         """
         file_count = 0
-        args = ctx.message.content.split(' ')[1:]
-        if ctx.message.attachments:
+        if ctx.message.attachments or url:
             await ctx.send('{} I am downloading the file. This may take a long time. '
                            'I will ping you when I finish.'.format(ctx.author.mention))
+        if ctx.message.attachments or url:
             for attachment in ctx.message.attachments:
-                zip_file = await self._download(attachment.url)
-                file_count += len(zip_file.infolist())
-                for file in zip_file.infolist():
-                    await self._process_image(BytesIO(zip_file.read(file.filename)))
+                file_count += await self._bulk_process(attachment.url)
         elif url:
-            try:
-                zip_file = await self._download(url)
-                file_count += len(zip_file.infolist())
-                for file in zip_file.infolist():
-                    await self._process_image(BytesIO(zip_file.read(file.filename)))
-                    zip_file.close()
-                    await ctx.author.send('I finished processing your upload of {} images. '
-                                          'Shitpost away!'.format(file_count))
-            except Exception as e:
-                await ctx.author.send('I got an error while uploading your file: {}'.format(e))
-        elif len(args) > 1:
-            await ctx.send('That is not a valid url')
+            file_count += await self._bulk_process(url)
         else:
             await ctx.send('No file or url has been provided')
+            return
+        logging.info('Successfully added {} images to MEDIA'.format(file_count))
+        await ctx.author.send('I finished processing your upload of {} images. '
+                              'Shitpost away!'.format(file_count))
+
+    @dankbulkupload.error
+    async def on_dankbulkupload_error(self, ctx, error):
+        logging.error(error)
+        await ctx.author.send(error)
 
     @commands.command()
     async def dankupload(self, ctx):
@@ -134,13 +118,14 @@ class DankMemes(commands.Cog):
         else:
             async with ctx.typing():
                 for attachment in ctx.message.attachments:
-                    response = requests.get(attachment.url)
-                    if response.status_code == 200:
-                        try:
-                            await self._process_image(BytesIO(response.content))
-                            await ctx.send('Dank image uploaded successfully')
-                        except Exception as e:
-                            await ctx.send('Error: {}'.format(e))
+                    file = await download(attachment.url)
+                    await self._process_image(file)
+                    await ctx.send('Dank image uploaded successfully')
+
+    @dankupload.error
+    async def on_dankupload_error(self, ctx, error):
+        logging.error(error)
+        await ctx.channel.send('I got an error while uploading your file: {}'.format(error))
 
     @commands.command()
     async def dank(self, ctx):
@@ -149,7 +134,7 @@ class DankMemes(commands.Cog):
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
 
         Returns
         -------

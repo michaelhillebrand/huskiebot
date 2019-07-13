@@ -2,10 +2,10 @@ from random import randint
 
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class DiceRoll(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+
+class DiceRoll(BaseCog):
 
     @commands.command()
     async def roll(self, ctx, sides_count: int):

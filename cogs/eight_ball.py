@@ -1,9 +1,12 @@
+import logging
 from random import randint
 
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class EightBall(commands.Cog):
+
+class EightBall(BaseCog):
     CHOICES = [
         'It is certain',
         'It is decidedly so',
@@ -27,25 +30,22 @@ class EightBall(commands.Cog):
         'Very doubtful'
     ]
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(aliases=["8ball"])
-    async def eight_ball(self, ctx, question: str):
+    async def eight_ball(self, ctx, *args):
         """
         User asks the bot a question and returns an answer
 
         Parameters
         ----------
         ctx : discord.ext.commands.Context
-        question : str
+        args : str (question)
 
         Returns
         -------
         str
             A randomly selected answer
         """
-        if question[-1] != '?':
+        if args[-1][-1] != '?':
             await ctx.send('You need to ask a question')
         else:
             await ctx.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
@@ -64,4 +64,4 @@ class EightBall(commands.Cog):
         -------
         str
         """
-        await ctx.send('You need to ask a question')
+        logging.error(error)

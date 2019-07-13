@@ -1,10 +1,12 @@
 import logging
 
 import discord
-from discord.ext import tasks, commands
+from discord.ext import tasks
+
+from cogs.base import BaseCog
 
 
-class PresenceChanger(commands.Cog):
+class PresenceChanger(BaseCog):
     STATUSES = [
         (0, 'shitposting memes'),
         (0, 'Tuber Simulator'),
@@ -27,10 +29,10 @@ class PresenceChanger(commands.Cog):
         watching = 3
     """
 
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot) -> None:
         self.index = 0
         self.presence_changer.start()
+        super().__init__(bot)
 
     def cog_unload(self):
         self.presence_changer.cancel()

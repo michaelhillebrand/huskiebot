@@ -1,11 +1,8 @@
-# Standard library
 import logging
 import os
 
-# Pip installed libraries
 import dotenv
 
-# Local libraries
 from cogs.chat_moderate import ChatModerator
 from cogs.dank_memes import DankMemes
 from cogs.dice_roll import DiceRoll
@@ -44,10 +41,8 @@ def setup_bot():
         ChatModerator,
         GruNosePoster
     ]
-
     for cog in cogs:
-        bot_.add_cog(cog(bot_))
-
+        bot_.add_cog(cog(bot=bot_))
     return bot_
 
 
@@ -55,7 +50,6 @@ if __name__ == '__main__':
     # Config
     logging.basicConfig(level=logging.INFO)
     dotenv.load_dotenv()
-    DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
     bot = setup_bot()
-    bot.run(DISCORD_BOT_TOKEN)
+    bot.run(os.getenv('DISCORD_BOT_TOKEN'))

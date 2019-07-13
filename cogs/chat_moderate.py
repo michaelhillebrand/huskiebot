@@ -4,15 +4,14 @@ import typing
 import discord
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class ChatModerator(commands.Cog):
+
+class ChatModerator(BaseCog):
     strikes = {}
 
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command()
-    async def purge(self, ctx, purge_limit: typing.Optional[int] = 5):
+    @commands.command(hidden=True)
+    async def purge(self, ctx, purge_limit: typing.Optional[int] = 100):
         """
         HuskieBot will clear n messages from channel
 
@@ -42,7 +41,7 @@ class ChatModerator(commands.Cog):
         else:
             await ctx.send('You do no have the permissions to do that')
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def chat_moderate(self, ctx):
         """(NOT IMPLEMENTED YET) Enable or disable chat moderation"""
         pass

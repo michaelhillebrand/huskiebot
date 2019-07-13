@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class Ping(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+
+class Ping(BaseCog):
 
     @commands.command()
     async def ping(self, ctx):

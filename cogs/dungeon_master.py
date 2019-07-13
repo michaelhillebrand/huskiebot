@@ -1,9 +1,9 @@
 from discord.ext import commands
 
+from cogs.base import BaseCog
 
-class DungeonMaster(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+
+class DungeonMaster(BaseCog):
 
     @commands.command()
     async def dm(self, ctx):
