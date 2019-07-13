@@ -2,7 +2,7 @@ import logging
 import typing
 
 import discord
-from discord.ext import tasks, commands
+from discord.ext import commands
 
 
 class ChatModerator(commands.Cog):
@@ -19,22 +19,21 @@ class ChatModerator(commands.Cog):
         Parameters
         ----------
         ctx : discord.ext.commands.Context
+        purge_limit : int
 
         Returns
         -------
         None
 
         """
-        min_purge_limit = 1
-
         if ctx.channel.type == discord.ChannelType.private:
             await ctx.send('I can\'t purge a DM Channel')
         elif ctx.author.guild_permissions.administrator:
             try:
-                if purge_limit < min_purge_limit:
+                if purge_limit < 1:
                     raise ValueError
-
-                logging.info("Purging the purge command and the last {limit} message(s) from channel: {channel}".format(limit = purge_limit, channel = ctx.channel.name))
+                logging.info("Purging the last {limit} message(s) "
+                             "from channel: {channel}".format(limit=purge_limit, channel=ctx.channel.name))
                 await ctx.channel.purge(limit=purge_limit + 1)
             except ValueError:
                 await ctx.send('That is not a valid number')

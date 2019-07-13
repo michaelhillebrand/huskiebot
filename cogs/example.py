@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class Example(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -8,6 +9,18 @@ class Example(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        """
+        HuskieBot will welcome new users to the server
+
+        Parameters
+        ----------
+        member : discord.Member
+
+        Returns
+        -------
+        str
+            HuskieBot's greeting
+        """
         channel = member.guild.system_channel
         if channel is not None:
             await channel.send('Welcome {0.mention}.'.format(member))

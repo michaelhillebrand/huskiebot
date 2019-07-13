@@ -1,8 +1,8 @@
-import asyncio
 import logging
 
 import discord
 from discord.ext import tasks, commands
+
 
 class PresenceChanger(commands.Cog):
     STATUSES = [
@@ -35,10 +35,18 @@ class PresenceChanger(commands.Cog):
     def cog_unload(self):
         self.presence_changer.cancel()
 
-    @tasks.loop(seconds=60.0)
+    @tasks.loop(minutes=1)
     async def presence_changer(self):
+        """
+        HuskieBot will update its presence every minute with a new status from its list
+
+        Returns
+        -------
+            discord.Activity
+        """
         try:
-            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.STATUSES[self.index][0], name=self.STATUSES[self.index][1]))
+            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.STATUSES[self.index][0],
+                                                                                   name=self.STATUSES[self.index][1]))
             await self.bot.change_presence(activity=discord.Activity(
                 type=self.STATUSES[self.index][0],
                 name=self.STATUSES[self.index][1]

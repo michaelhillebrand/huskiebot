@@ -1,7 +1,7 @@
 from random import randint
 
-import discord
 from discord.ext import commands
+
 
 class EightBall(commands.Cog):
     CHOICES = [
@@ -37,16 +37,14 @@ class EightBall(commands.Cog):
 
         Parameters
         ----------
-        message : discord.Message
-            A question to answer (Must end with "?")
+        ctx : discord.ext.commands.Context
+        question : str
 
         Returns
         -------
         str
             A randomly selected answer
-
         """
-
         if question[-1] != '?':
             await ctx.send('You need to ask a question')
         else:
@@ -54,4 +52,16 @@ class EightBall(commands.Cog):
 
     @eight_ball.error
     async def on_eight_ball_error(self, ctx, error):
+        """
+        Handles error for eight_ball command
+
+        Parameters
+        ----------
+        ctx : discord.ext.commands.Context
+        error : Error
+
+        Returns
+        -------
+        str
+        """
         await ctx.send('You need to ask a question')

@@ -9,7 +9,7 @@ import dotenv
 from cogs.chat_moderate import ChatModerator
 from cogs.dank_memes import DankMemes
 from cogs.dice_roll import DiceRoll
-from cogs.dungeonmaster import DungeonMaster
+from cogs.dungeon_master import DungeonMaster
 from cogs.eight_ball import EightBall
 from cogs.example import Example
 from cogs.gru_nose import GruNosePoster
@@ -21,10 +21,12 @@ from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
 from discord_bot import HuskieBot
 
+
 def setup_bot():
-    bot = HuskieBot(
+    bot_ = HuskieBot(
         command_prefix='!',
-        description="HuskieBot is a collection of miscellaneous commands, tasks, and tools used on Michael's Discord guild"
+        description="HuskieBot is a collection of miscellaneous commands, "
+                    "tasks, and tools used on Michael's Discord guild"
     )
 
     cogs = [
@@ -44,9 +46,10 @@ def setup_bot():
     ]
 
     for cog in cogs:
-        bot.add_cog(cog(bot))
+        bot_.add_cog(cog(bot_))
 
-    return bot
+    return bot_
+
 
 if __name__ == '__main__':
     # Config

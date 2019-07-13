@@ -7,19 +7,22 @@ from zipfile import ZipFile
 
 import discord
 import requests
+import typing
 from discord.ext import commands
 from PIL import Image
 from requests import HTTPError
 
 from discord_bot import MEDIA_PATH
 
+#TODO finish
+
 class DankMemes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def _process_image(self, file):
+    async def _process_image(self, file):
         """
-        processes image/gif and saves it to hard drive
+        Processes image/gif and saves it to hard drive
 
         Parameters
         ----------
@@ -44,10 +47,9 @@ class DankMemes(commands.Cog):
                        optimize=True
                        )
 
-    # TODO: Fix this. Even with the original bot, my uploads from dropbox or onedrive worked
     async def _download(self, url):
         """
-        downlaods ZIP file from url
+        Downloads ZIP file from url
 
         Parameters
         ----------
@@ -73,40 +75,38 @@ class DankMemes(commands.Cog):
             raise HTTPError('Received a non 200 status code: {}'.format(r.status_code))
 
     @commands.command()
-    async def dankbulkupload(self, ctx):
+    async def dankbulkupload(self, ctx, url: typing.Optional[str]):
         """
-        uploads a zip of images from attachments or url to HuskieBot's library
+        Uploads a zip of images from attachments or url to HuskieBot's library
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
+        url : str (optional)
 
         Returns
         -------
         str
 
         """
+        file_count = 0
         args = ctx.message.content.split(' ')[1:]
-        if ctx.message.attachments or len(args) == 1:
+        if ctx.message.attachments:
             await ctx.send('{} I am downloading the file. This may take a long time. '
-                                       'I will ping you when I finish.'
-                                       .format(ctx.author.mention))
-            file_count = 0
+                           'I will ping you when I finish.'.format(ctx.author.mention))
+            for attachment in ctx.message.attachments:
+                zip_file = await self._download(attachment.url)
+                file_count += len(zip_file.infolist())
+                for file in zip_file.infolist():
+                    await self._process_image(BytesIO(zip_file.read(file.filename)))
+        elif url:
             try:
-                zip_file = None
-                if ctx.message.attachments:
-                    for attachment in ctx.message.attachments:
-                        zip_file = await self._download(attachment.url)
-                        file_count += len(zip_file.infolist())
-                        for file in zip_file.infolist():
-                            self._process_image(BytesIO(zip_file.read(file.filename)))
-                else:
-                    zip_file = await self._download(args[0])
-                    file_count += len(zip_file.infolist())
-                    for file in zip_file.infolist():
-                        self._process_image(BytesIO(zip_file.read(file.filename)))
-                zip_file.close()
-                await ctx.author.send('I finished processing your upload of {} images. '
+                zip_file = await self._download(url)
+                file_count += len(zip_file.infolist())
+                for file in zip_file.infolist():
+                    await self._process_image(BytesIO(zip_file.read(file.filename)))
+                    zip_file.close()
+                    await ctx.author.send('I finished processing your upload of {} images. '
                                           'Shitpost away!'.format(file_count))
             except Exception as e:
                 await ctx.author.send('I got an error while uploading your file: {}'.format(e))
@@ -118,11 +118,11 @@ class DankMemes(commands.Cog):
     @commands.command()
     async def dankupload(self, ctx):
         """
-        uploads an image to HuskieBot's library
+        Uploads an image to HuskieBot's library
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
 
         Returns
         -------
@@ -137,7 +137,7 @@ class DankMemes(commands.Cog):
                     response = requests.get(attachment.url)
                     if response.status_code == 200:
                         try:
-                            self._process_image(BytesIO(response.content))
+                            await self._process_image(BytesIO(response.content))
                             await ctx.send('Dank image uploaded successfully')
                         except Exception as e:
                             await ctx.send('Error: {}'.format(e))

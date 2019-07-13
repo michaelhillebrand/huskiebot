@@ -4,6 +4,7 @@ from random import randint
 import discord
 from discord.ext import commands
 
+
 class RockPaperScissors(commands.Cog):
     stats = {}
 
