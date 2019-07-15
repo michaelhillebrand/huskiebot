@@ -54,8 +54,8 @@ class Quotes(BaseCog):
         "'Fix it again, Tony'",
     ]
     SHOWS = {
-        'koth': KING_OF_THE_HILL,
-        'bojack': BOJACK_HORSEMAN
+        'koth': ('King of the Hill', KING_OF_THE_HILL),
+        'bojack': ('BoJack Horseman', BOJACK_HORSEMAN)
     }
 
     @commands.group(invoke_without_command=True)
@@ -63,15 +63,20 @@ class Quotes(BaseCog):
         """HuskieBot will say a quote from a show"""
         if ctx.invoked_subcommand is None:
             try:
-                show = show if show else random.choice(list(self.SHOWS))
-                show_quotes = self.SHOWS[show]
-                quote = show_quotes[index] if index else random.choice(show_quotes)
+                show = self.SHOWS[show] if show else random.choice(list(self.SHOWS.values()))
+                show_quotes = show[-1]
+                if index is None:
+                    quote = random.choice(show_quotes)
+                elif index >= 0:
+                    quote = show_quotes[index]
+                else:
+                    raise IndexError
             except IndexError:
                 await ctx.send('That is not a valid quote')
             except KeyError:
                 await ctx.send('That is not a valid show')
             else:
-                await ctx.send('[{show}] {quote}'.format(show=show, quote=quote))
+                await ctx.send('[{show}] {quote}'.format(show=show[0].title(), quote=quote))
 
     @quote.command(name='count')
     async def quote_count(self, ctx):
