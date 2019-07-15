@@ -31,21 +31,21 @@ class EightBall(BaseCog):
     ]
 
     @commands.command(aliases=["8ball"])
-    async def eight_ball(self, ctx, *args):
+    async def eight_ball(self, ctx, *, arg):
         """
         User asks the bot a question and returns an answer
 
         Parameters
         ----------
         ctx : discord.ext.commands.Context
-        args : str (question)
+        arg : str (question)
 
         Returns
         -------
         str
             A randomly selected answer
         """
-        if args[-1][-1] != '?':
+        if arg[-1] != '?':
             await ctx.send('You need to ask a question')
         else:
             await ctx.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
@@ -65,3 +65,4 @@ class EightBall(BaseCog):
         str
         """
         logging.error(error)
+        await ctx.send('You need to ask a question')

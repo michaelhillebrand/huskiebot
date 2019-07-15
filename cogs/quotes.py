@@ -1,5 +1,4 @@
 import random
-from random import randint
 import typing
 
 from discord.ext import commands
@@ -8,7 +7,18 @@ from cogs.base import BaseCog
 
 
 class Quotes(BaseCog):
-    KOTH = [
+    BOJACK_HORSEMAN = [
+        "I’m responsible for my own happiness? I can’t even be responsible for my own breakfast!",
+        "You sleep on my couch and you don’t pay rent. I’ve had tapeworms that are less parasitic. "
+        "I don’t even remember why I let you stay with me in the first place.",
+        "Laura! Clear our my schedule! I have to push a boulder up a hill and then have it roll over me "
+        "time and time again with no regard for my well-being!",
+        "I need to go take a shower so I can’t tell if I’m crying or not",
+        "BoJack, I’m gonna level with you, honey. This whole you-hating-the-troops thing is not great",
+        "Dead on the inside, dead on the outside",
+        "Todd, I weigh 1200 pounds. It takes a lot of beer to get me drunk... Yes",
+    ]
+    KING_OF_THE_HILL = [
         "What the hell kind of country is this where I can only hate a man if he's white?",
         "What? No, I sell propane!",
         "Soccer was invented by European ladies to keep them busy while their husbands did the cooking",
@@ -44,31 +54,27 @@ class Quotes(BaseCog):
         "'Fix it again, Tony'",
     ]
     SHOWS = {
-        'koth': KOTH
+        'koth': KING_OF_THE_HILL,
+        'bojack': BOJACK_HORSEMAN
     }
 
     @commands.group(invoke_without_command=True)
     async def quote(self, ctx, show: typing.Optional[str] = None, index: typing.Optional[int] = None):
-        """HuskieBot will say a quote from show"""
+        """HuskieBot will say a quote from a show"""
         if ctx.invoked_subcommand is None:
-            if show:
-                try:
-                    show_quotes = self.SHOWS[show]
-                except KeyError:
-                    await ctx.send('That is not a valid show')
-                    return
-            else:
-                show_quotes = self.SHOWS[random.choice(list(self.SHOWS))]
-            if not index:
-                index = randint(0, len(show_quotes) - 1)
             try:
-                await ctx.send(show_quotes[index])
+                show = show if show else random.choice(list(self.SHOWS))
+                show_quotes = self.SHOWS[show]
+                quote = show_quotes[index] if index else random.choice(show_quotes)
             except IndexError:
                 await ctx.send('That is not a valid quote')
-                return
+            except KeyError:
+                await ctx.send('That is not a valid show')
+            else:
+                await ctx.send('[{show}] {quote}'.format(show=show, quote=quote))
 
     @quote.command(name='count')
     async def quote_count(self, ctx):
-        """HuskieBot will say how many quotes it current has"""
+        """HuskieBot will say how many quotes it currently has"""
         await ctx.send("I have {} quotes from {} shows".format(sum([len(quotes) for _, quotes in self.SHOWS.items()]),
                                                                len(list(self.SHOWS))))
