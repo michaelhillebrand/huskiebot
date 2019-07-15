@@ -10,7 +10,7 @@ from cogs.base import BaseCog
 class ChatModerator(BaseCog, command_attrs={'hidden': True}):
     strikes = {}
 
-    @commands.command
+    @commands.command()
     async def purge(self, ctx, purge_limit: typing.Optional[int] = 100):
         """
         HuskieBot will clear n messages from channel
@@ -41,7 +41,7 @@ class ChatModerator(BaseCog, command_attrs={'hidden': True}):
         else:
             await ctx.send('You do no have the permissions to do that')
 
-    @commands.command
+    @commands.command()
     async def chat_moderate(self, ctx):
         """(NOT IMPLEMENTED YET) Enable or disable chat moderation"""
         pass
