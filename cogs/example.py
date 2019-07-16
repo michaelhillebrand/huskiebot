@@ -10,23 +10,23 @@ class Example(BaseCog):
         self._last_member = None
         super().__init__(bot)
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        """
-        HuskieBot will welcome new users to the server
-
-        Parameters
-        ----------
-        member : discord.Member
-
-        Returns
-        -------
-        str
-            HuskieBot's greeting
-        """
-        channel = member.guild.system_channel
-        if channel is not None:
-            await channel.send('Welcome {0.mention}.'.format(member))
+    # @commands.Cog.listener()
+    # async def on_member_join(self, member):
+    #     """
+    #     HuskieBot will welcome new users to the server
+    #
+    #     Parameters
+    #     ----------
+    #     member : discord.Member
+    #
+    #     Returns
+    #     -------
+    #     str
+    #         HuskieBot's greeting
+    #     """
+    #     channel = member.guild.system_channel
+    #     if channel is not None:
+    #         await channel.send('Welcome {0.mention}.'.format(member))
 
     @commands.command(hidden=True)
     async def hello(self, ctx, *, member: discord.Member = None):

@@ -11,6 +11,7 @@ from cogs.eight_ball import EightBall
 from cogs.example import Example
 from cogs.gru_nose import GruNosePoster
 from cogs.ping import Ping
+from cogs.poll import Poll
 from cogs.presence_changer import PresenceChanger
 from cogs.quotes import Quotes
 from cogs.rps import RockPaperScissors
@@ -39,7 +40,8 @@ def setup_bot():
         DankMemes,
         PresenceChanger,
         ChatModerator,
-        GruNosePoster
+        GruNosePoster,
+        Poll,
     ]
     for cog in cogs:
         bot_.add_cog(cog(bot=bot_))
@@ -48,7 +50,7 @@ def setup_bot():
 
 if __name__ == '__main__':
     # Config
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename='bot.log', level=logging.INFO)
     dotenv.load_dotenv()
 
     bot = setup_bot()

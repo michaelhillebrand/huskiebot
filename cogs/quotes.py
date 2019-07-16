@@ -76,7 +76,7 @@ class Quotes(BaseCog):
             except KeyError:
                 await ctx.send('That is not a valid show')
             else:
-                await ctx.send('[{show}] {quote}'.format(show=show[0].title(), quote=quote))
+                await ctx.send('[{show}] {quote}'.format(show=show[0], quote=quote))
 
     @quote.command(name='count')
     async def quote_count(self, ctx):
