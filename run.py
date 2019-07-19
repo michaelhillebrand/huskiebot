@@ -48,7 +48,7 @@ def setup_bot():
 
 if __name__ == '__main__':
     # Config
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename='bot.log', level=logging.INFO)
     dotenv.load_dotenv()
 
     bot = setup_bot()
