@@ -1,11 +1,10 @@
-import discord
 from discord.ext import commands
 
-class ShutupWill(commands.Cog):
+from cogs.base import BaseCog
+
+
+class ShutupWill(BaseCog):
     will = None
-    
-    def __init__(self, bot):
-        self.bot = bot
 
     @commands.command()
     async def shutup(self, ctx):
@@ -14,13 +13,12 @@ class ShutupWill(commands.Cog):
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
 
         Returns
         -------
         str
             Will's User mention
-
         """
         if not self.will:
             self.will = ctx.bot.get_user(187364654455062528)

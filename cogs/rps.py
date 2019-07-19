@@ -4,7 +4,10 @@ from random import randint
 import discord
 from discord.ext import commands
 
-class RockPaperScissors(commands.Cog):
+from cogs.base import BaseCog
+
+
+class RockPaperScissors(BaseCog):
     stats = {}
 
     ROCK = 'rock'
@@ -12,9 +15,6 @@ class RockPaperScissors(commands.Cog):
     SCISSORS = 'scissors'
 
     CHOICES = [ROCK, PAPER, SCISSORS]
-
-    def __init__(self, bot):
-        self.bot = bot
 
     async def _play(self, ctx, move):
         if self.stats.get(ctx.author.id, None):

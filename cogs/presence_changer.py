@@ -1,10 +1,12 @@
-import asyncio
 import logging
 
 import discord
-from discord.ext import tasks, commands
+from discord.ext import tasks
 
-class PresenceChanger(commands.Cog):
+from cogs.base import BaseCog
+
+
+class PresenceChanger(BaseCog):
     STATUSES = [
         (0, 'shitposting memes'),
         (0, 'Tuber Simulator'),
@@ -27,18 +29,26 @@ class PresenceChanger(commands.Cog):
         watching = 3
     """
 
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot) -> None:
         self.index = 0
         self.presence_changer.start()
+        super().__init__(bot)
 
     def cog_unload(self):
         self.presence_changer.cancel()
 
-    @tasks.loop(seconds=60.0)
+    @tasks.loop(minutes=1)
     async def presence_changer(self):
+        """
+        HuskieBot will update its presence every minute with a new status from its list
+
+        Returns
+        -------
+            discord.Activity
+        """
         try:
-            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.STATUSES[self.index][0], name=self.STATUSES[self.index][1]))
+            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.STATUSES[self.index][0],
+                                                                                   name=self.STATUSES[self.index][1]))
             await self.bot.change_presence(activity=discord.Activity(
                 type=self.STATUSES[self.index][0],
                 name=self.STATUSES[self.index][1]
@@ -47,8 +57,6 @@ class PresenceChanger(commands.Cog):
         except IndexError:
             self.index = 0
 
-    # TODO: Switch this to happen in a bot.event on_ready function instead
     @presence_changer.before_loop
     async def before_presence_changer(self):
-        logging.info('Waiting for bot to be ready...')
         await self.bot.wait_until_ready()

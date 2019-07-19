@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 
-class Ping(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+from cogs.base import BaseCog
+
+
+class Ping(BaseCog):
 
     @commands.command()
     async def ping(self, ctx):
@@ -12,13 +13,11 @@ class Ping(commands.Cog):
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
 
         Returns
         -------
-        str
-            User mention and a message
-
+        None
         """
         try:
             await ctx.message.delete()

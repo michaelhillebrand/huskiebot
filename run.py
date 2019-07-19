@@ -1,15 +1,12 @@
-# Standard library
 import logging
 import os
 
-# Pip installed libraries
 import dotenv
 
-# Local libraries
 from cogs.chat_moderate import ChatModerator
 from cogs.dank_memes import DankMemes
 from cogs.dice_roll import DiceRoll
-from cogs.dungeonmaster import DungeonMaster
+from cogs.dungeon_master import DungeonMaster
 from cogs.eight_ball import EightBall
 from cogs.example import Example
 from cogs.gru_nose import GruNosePoster
@@ -21,10 +18,12 @@ from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
 from discord_bot import HuskieBot
 
+
 def setup_bot():
-    bot = HuskieBot(
+    bot_ = HuskieBot(
         command_prefix='!',
-        description="HuskieBot is a collection of miscellaneous commands, tasks, and tools used on Michael's Discord guild"
+        description="HuskieBot is a collection of miscellaneous commands, "
+                    "tasks, and tools used on Michael's Discord guild"
     )
 
     cogs = [
@@ -42,17 +41,15 @@ def setup_bot():
         ChatModerator,
         GruNosePoster
     ]
-
     for cog in cogs:
-        bot.add_cog(cog(bot))
+        bot_.add_cog(cog(bot=bot_))
+    return bot_
 
-    return bot
 
 if __name__ == '__main__':
     # Config
     logging.basicConfig(level=logging.INFO)
     dotenv.load_dotenv()
-    DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
     bot = setup_bot()
-    bot.run(DISCORD_BOT_TOKEN)
+    bot.run(os.getenv('DISCORD_BOT_TOKEN'))

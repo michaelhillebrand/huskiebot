@@ -1,12 +1,12 @@
-import discord
 from discord.ext import commands
 
-class Voice(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+from cogs.base import BaseCog
+
+
+class Voice(BaseCog):
 
     def _get_current_voice_client(self, ctx):
-        for vc in self.bot.voice_clients:
+        for vc in ctx.bot.voice_clients:
             if vc.guild == ctx.guild:
                 return vc
         return None
@@ -18,14 +18,14 @@ class Voice(commands.Cog):
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
 
         Returns
         -------
         None
 
         """
-        if ctx.author.voice == None:
+        if ctx.author.voice is None:
             await ctx.send('You are not in a voice channel')
         else:
             vc = self._get_current_voice_client(ctx)
@@ -46,7 +46,7 @@ class Voice(commands.Cog):
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
 
         Returns
         -------
