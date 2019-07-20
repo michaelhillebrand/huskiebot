@@ -94,33 +94,31 @@ class DankMemes(BaseCog):
         out[tuple(coords)] = 0
         return out
 
-    def _saturate(self, img, flares=False):
+    def _saturate(self, img):
         """
         frys an image
 
         :param img: PIL.Image
-        :param flares: bool
         :return PIL.Image:
         """
         flare_positions = []
-        if flares:
-            opencv_img = cv2.cvtColor(numpy.array(img), cv2.COLOR_RGB2GRAY)
-            faces = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')\
-                .detectMultiScale(opencv_img,
-                                  scaleFactor=1.3,
-                                  minNeighbors=5,
-                                  minSize=(30, 30),
-                                  flags=cv2.CASCADE_SCALE_IMAGE
-                                  )
-            for (x, y, w, h) in faces:
-                face_roi = opencv_img[y:y+h, x:x+w]  # Get region of interest (detected face)
-                eyes = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml').detectMultiScale(face_roi)
-                for (ex, ey, ew, eh) in eyes:
-                    eye_corner = (ex + ew / 2, ey + eh / 2)
-                    flare_size = eh if eh > ew else ew
-                    flare_size *= 4
-                    corners = [math.floor(x) for x in eye_corner]
-                    flare_positions.append(FlarePosition(*corners, flare_size))
+        opencv_img = cv2.cvtColor(numpy.array(img), cv2.COLOR_RGB2GRAY)
+        faces = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')\
+            .detectMultiScale(opencv_img,
+                              scaleFactor=1.3,
+                              minNeighbors=5,
+                              minSize=(30, 30),
+                              flags=cv2.CASCADE_SCALE_IMAGE
+                              )
+        for (x, y, w, h) in faces:
+            face_roi = opencv_img[y:y+h, x:x+w]  # Get region of interest (detected face)
+            eyes = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml').detectMultiScale(face_roi)
+            for (ex, ey, ew, eh) in eyes:
+                eye_corner = (ex + ew / 2, ey + eh / 2)
+                flare_size = eh if eh > ew else ew
+                flare_size *= 4
+                corners = [math.floor(x) for x in eye_corner]
+                flare_positions.append(FlarePosition(*corners, flare_size))
 
         # Crush image to hell and back
         width, height = img.width, img.height
@@ -150,9 +148,9 @@ class DankMemes(BaseCog):
 
         return img
 
-    def _deep_fry(self, image, flares=False):
+    def _deep_fry(self, image):
         file = NamedTemporaryFile(suffix='.jpg')
-        Image.fromarray(self._salt_and_pepper(numpy.asarray(self._saturate(image.convert('RGB'), flares=flares)))
+        Image.fromarray(self._salt_and_pepper(numpy.asarray(self._saturate(image.convert('RGB'))))
                         .astype('uint8')).save(file)
         return file
 
@@ -263,21 +261,16 @@ class DankMemes(BaseCog):
 
         Returns
         -------
-        str
-
+        Image
+            Deep Fried Image
         """
-        flares = True
-        # args = ctx.message.content.split(' ')[1:]
-        # if any(arg in ['-f', '--flares'] for arg in args):
-        #     flares = True
-        #     args.remove('-f')
         if ctx.message.attachments:
             async with ctx.message.channel.typing():
                 for attachment in ctx.message.attachments:
                     response = requests.get(attachment.url)
                     if response.status_code == 200:
                         try:
-                            file = self._deep_fry(Image.open(BytesIO(response.content)), flares=flares)
+                            file = self._deep_fry(Image.open(BytesIO(response.content)))
                         except OSError:
                             await ctx.message.channel.send('I can\'t deep fry that file')
                         else:
@@ -288,7 +281,7 @@ class DankMemes(BaseCog):
             try:
                 if index < 0:
                     raise IOError
-                file = self._deep_fry(Image.open(MEDIA_PATH + '{}.jpg'.format(index)), flares=flares)
+                file = self._deep_fry(Image.open(MEDIA_PATH + '{}.jpg'.format(index)))
                 await ctx.message.channel.send(file=discord.File(file.name))
             except IOError:
                 await ctx.message.channel.send('That is not a valid index')
