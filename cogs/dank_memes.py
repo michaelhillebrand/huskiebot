@@ -142,25 +142,26 @@ class DankMemes(BaseCog):
             Dank Image
 
         """
-        images = sorted(os.listdir(MEDIA_PATH))
-        if len(images) == 0:
-            await ctx.send('I don\'t have any images to shitpost with')
-        else:
-            try:
-                args = ctx.message.content.split(' ')[1:]
-                if len(args) > 1:
-                    raise RuntimeError
-                elif len(args) == 1:
-                    index = int(args[0]) - 1
-                else:
-                    index = randint(0, len(images))
+        if ctx.invoked_subcommand is None:
+            images = sorted(os.listdir(MEDIA_PATH))
+            if len(images) == 0:
+                await ctx.send('I don\'t have any images to shitpost with')
+            else:
+                try:
+                    args = ctx.message.content.split(' ')[1:]
+                    if len(args) > 1:
+                        raise RuntimeError
+                    elif len(args) == 1:
+                        index = int(args[0]) - 1
+                    else:
+                        index = randint(0, len(images))
 
-                if index >= 0 and index <= len(images):
-                    await ctx.send(index + 1, file=discord.File(os.path.join(MEDIA_PATH, images[index])))
-                else:
-                    raise RuntimeError
-            except (ValueError, RuntimeError, IndexError):
-                await ctx.send('That is not a valid meme')
+                    if index >= 0 and index <= len(images):
+                        await ctx.send(index + 1, file=discord.File(os.path.join(MEDIA_PATH, images[index])))
+                    else:
+                        raise RuntimeError
+                except (ValueError, RuntimeError, IndexError):
+                    await ctx.send('That is not a valid meme')
 
     @dank.command(name='count')
     async def dank_count(self, ctx):
