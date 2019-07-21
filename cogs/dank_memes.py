@@ -127,7 +127,7 @@ class DankMemes(BaseCog):
         logging.error(error)
         await ctx.channel.send('I got an error while uploading your file: {}'.format(error))
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def dank(self, ctx):
         """
         HuskieBot shitposts an image from its library
@@ -151,9 +151,19 @@ class DankMemes(BaseCog):
                 if len(args) > 1:
                     raise RuntimeError
                 elif len(args) == 1:
-                    index = int(args[0])
+                    index = int(args[0]) - 1
                 else:
-                    index = randint(0, len(images) - 1)
-                await ctx.send(index, file=discord.File(os.path.join(MEDIA_PATH, images[index])))
+                    index = randint(0, len(images))
+
+                if index >= 0 and index <= len(images):
+                    await ctx.send(index + 1, file=discord.File(os.path.join(MEDIA_PATH, images[index])))
+                else:
+                    raise RuntimeError
             except (ValueError, RuntimeError, IndexError):
                 await ctx.send('That is not a valid meme')
+
+    @dank.command(name='count')
+    async def dank_count(self, ctx):
+        """HuskieBot will say how many memes it currently has"""
+        images = sorted(os.listdir(MEDIA_PATH))
+        await ctx.send(f"I have {len(images)} dank memes")
