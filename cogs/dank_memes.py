@@ -116,11 +116,12 @@ class DankMemes(BaseCog):
         if not ctx.message.attachments:
             await ctx.send('No file detected')
         else:
+            images = sorted(os.listdir(MEDIA_PATH))
             async with ctx.typing():
                 for attachment in ctx.message.attachments:
                     file = await download(attachment.url)
                     await self._process_image(file)
-                    await ctx.send('Dank image uploaded successfully')
+                    await ctx.send(f'Dank image {len(images) + 1} uploaded successfully')
 
     @dankupload.error
     async def on_dankupload_error(self, ctx, error):
