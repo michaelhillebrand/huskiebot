@@ -75,6 +75,8 @@ class DankMemes(BaseCog):
         """
         Salts and Peppers image (numpy array)
 
+        https://stackoverflow.com/questions/22937589/how-to-add-noise-gaussian-salt-and-pepper-etc-to-image-in-python-with-opencv
+
         :param image: numpy.array
         :return numpy.array:
         """
@@ -150,8 +152,13 @@ class DankMemes(BaseCog):
 
     def _deep_fry(self, image):
         file = NamedTemporaryFile(suffix='.jpg')
-        Image.fromarray(self._salt_and_pepper(numpy.asarray(self._saturate(image.convert('RGB'))))
-                        .astype('uint8')).save(file)
+        image = image.convert('RGB')
+        image = self._saturate(image)
+        nparray = numpy.asarray(image)
+        nparray = self._salt_and_pepper(nparray)
+        nparray = nparray.astype('uint8')
+        image = Image.fromarray(nparray)
+        image.save(file)
         return file
 
     @commands.command()
@@ -279,7 +286,7 @@ class DankMemes(BaseCog):
                         await ctx.message.channel.send('I could not download your file')
         elif index is not None:
             try:
-                if index < 0:
+                if index:
                     raise IOError
                 file = self._deep_fry(Image.open(MEDIA_PATH + '{}.jpg'.format(index)))
                 await ctx.message.channel.send(file=discord.File(file.name))
