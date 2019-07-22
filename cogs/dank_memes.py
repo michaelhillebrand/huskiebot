@@ -146,7 +146,7 @@ class DankMemes(BaseCog):
         if ctx.invoked_subcommand is None:
             images = sorted(os.listdir(MEDIA_PATH))
             if len(images) == 0:
-                await ctx.send('I don\'t have any images to shitpost with')
+                await ctx.send("I don't have any images to shitpost with")
             else:
                 try:
                     args = ctx.message.content.split(' ')[1:]
