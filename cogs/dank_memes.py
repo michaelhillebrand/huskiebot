@@ -32,13 +32,13 @@ class DankMemes(BaseCog):
         file.seek(0)
         image = Image.open(file)
         if image.format == 'GIF':
-            image.save(os.path.join(MEDIA_PATH, '{}.gif'.format(len(os.listdir(MEDIA_PATH)))),
+            image.save(os.path.join(MEDIA_PATH, f'{len(os.listdir(MEDIA_PATH))}.gif'),
                        save_all=True,
                        optimize=True
                        )
         else:
             image = image.convert(mode='RGB')
-            image.save(os.path.join(MEDIA_PATH, '{}.jpg'.format(len(os.listdir(MEDIA_PATH)))),
+            image.save(os.path.join(MEDIA_PATH, f'{len(os.listdir(MEDIA_PATH))}.jpg'),
                        format='JPEG',
                        optimize=True
                        )
@@ -80,8 +80,8 @@ class DankMemes(BaseCog):
         """
         file_count = 0
         if ctx.message.attachments or url:
-            await ctx.send('{} I am downloading the file. This may take a long time. '
-                           'I will ping you when I finish.'.format(ctx.author.mention))
+            await ctx.send(f'{ctx.author.mention} I am downloading the file. This may take a long time. '
+                           'I will ping you when I finish.')
         if ctx.message.attachments or url:
             for attachment in ctx.message.attachments:
                 file_count += await self._bulk_process(attachment.url)
@@ -90,9 +90,9 @@ class DankMemes(BaseCog):
         else:
             await ctx.send('No file or url has been provided')
             return
-        logging.info('Successfully added {} images to MEDIA'.format(file_count))
-        await ctx.author.send('I finished processing your upload of {} images. '
-                              'Shitpost away!'.format(file_count))
+        logging.info(f'Successfully added {file_count} images to MEDIA')
+        await ctx.author.send(f'I finished processing your upload of {file_count} images. '
+                              'Shitpost away!')
 
     @dankbulkupload.error
     async def on_dankbulkupload_error(self, ctx, error):
@@ -126,7 +126,7 @@ class DankMemes(BaseCog):
     @dankupload.error
     async def on_dankupload_error(self, ctx, error):
         logging.error(error)
-        await ctx.channel.send('I got an error while uploading your file: {}'.format(error))
+        await ctx.channel.send(f'I got an error while uploading your file: {error}')
 
     @commands.group(invoke_without_command=True)
     async def dank(self, ctx):
