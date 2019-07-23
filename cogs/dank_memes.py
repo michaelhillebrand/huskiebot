@@ -167,5 +167,5 @@ class DankMemes(BaseCog):
     @dank.command(name='count')
     async def dank_count(self, ctx):
         """HuskieBot will say how many memes it currently has"""
-        images = sorted(os.listdir(MEDIA_PATH))
+        images = os.listdir(MEDIA_PATH)
         await ctx.send(f"I have {len(images)} dank memes")
