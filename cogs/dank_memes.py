@@ -153,12 +153,12 @@ class DankMemes(BaseCog):
                     if len(args) > 1:
                         raise RuntimeError
                     elif len(args) == 1:
-                        index = int(args[0]) - 1
+                        index = int(args[0])
                     else:
-                        index = randint(0, len(images))
+                        index = randint(1, len(images))
 
-                    if index >= 0 and index <= len(images):
-                        await ctx.send(index + 1, file=discord.File(os.path.join(MEDIA_PATH, images[index])))
+                    if index and index <= len(images):
+                        await ctx.send(index, file=discord.File(os.path.join(MEDIA_PATH, f'{index}.jpg')))
                     else:
                         raise RuntimeError
                 except (ValueError, RuntimeError, IndexError):
