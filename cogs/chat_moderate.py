@@ -27,16 +27,20 @@ class ChatModerator(BaseCog, command_attrs={'hidden': True}):
         """
         min_purge_limit = 1
         if ctx.channel.type == discord.ChannelType.private:
+            logging.info(f'{ctx.author} tried to purge a DM channel')
             await ctx.send('I can\'t purge a DM Channel')
         elif ctx.author.guild_permissions.administrator:
             try:
                 if purge_limit < min_purge_limit:
                     raise ValueError
-                logging.info("Purging the purge command and the last {limit} message(s) from channel: {channel}".format(limit = purge_limit, channel = ctx.channel.name))
+                logging.info("Purging the last {limit} message(s) "
+                             "from channel: {channel}".format(limit=purge_limit, channel=ctx.channel.name))
                 await ctx.channel.purge(limit=purge_limit + 1)
             except ValueError:
+                logging.warning(f'{ctx.author} failed to purge a channel with a purge limit of {purge_limit}')
                 await ctx.send('That is not a valid number')
         else:
+            logging.warning(f'{ctx.author} failed to purge a channel')
             await ctx.send('You do no have the permissions to do that')
 
     @commands.command()

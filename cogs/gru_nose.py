@@ -12,12 +12,12 @@ from cogs.base import BaseCog
 class GruNosePoster(BaseCog):
 
     def __init__(self, bot) -> None:
-        self.channel_id = os.getenv('GRU_NOSE_CHANNEL')
+        self.channel_id = int(os.getenv('GRU_NOSE_CHANNEL'))
         self.channel = None
         if self.channel_id:
             self.gru_nose_poster.start()
         else:
-            logging.warning('No channel id was provided for the Gru Nose Poster')
+            logging.warning('No channel ID was provided')
         super().__init__(bot)
 
     def cog_unload(self):
@@ -35,7 +35,7 @@ class GruNosePoster(BaseCog):
         """
         logging.info("Checking to see if it is time to post a Gru nose picture")
         now = datetime.datetime.now()
-        if now.hour == 12:  # Noon
+        if now.hour == 22:  # Noon
             logging.info("It's high noon! Attempting to post the latest gru nose picture")
             gru_nose_filepath = os.path.join(BASE_PATH, 'gru/{}.png'.format(now.date()))
             try:
@@ -53,4 +53,9 @@ class GruNosePoster(BaseCog):
     @gru_nose_poster.before_loop
     async def before_gru_nose_poster(self):
         await self.bot.wait_until_ready()
-        self.channel = self.bot.get_channel(self.channel_id)
+        channel = self.bot.get_channel(self.channel_id)
+        if channel:
+            self.channel = channel
+        else:
+            logging.error('Channel ID was invalid')
+            raise ValueError
