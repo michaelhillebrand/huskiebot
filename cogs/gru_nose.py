@@ -23,7 +23,7 @@ class GruNosePoster(BaseCog):
     def cog_unload(self):
         self.gru_nose_poster.cancel()
 
-    @tasks.loop(seconds=5)
+    @tasks.loop(hours=1)
     async def gru_nose_poster(self):
         """
         HuskieBot will post the latest gru nose picture everyday at 12:00pm
@@ -33,6 +33,7 @@ class GruNosePoster(BaseCog):
         discord.File
             The latest gru nose picture
         """
+        logging.info("Checking to see if it is time to post a Gru nose picture")
         now = datetime.datetime.now()
         if now.hour == 12:  # Noon
             logging.info("It's high noon! Attempting to post the latest gru nose picture")
@@ -44,10 +45,10 @@ class GruNosePoster(BaseCog):
                 logging.error("Failed to find file: {}".format(e.filename))
                 self.gru_nose_poster.cancel()
                 return
-        # set next posting time
-        hours_until = 11 - now.hour
-        hours_until = 24 + hours_until if hours_until < 0 else hours_until
-        self.gru_nose_poster.change_interval(hours=hours_until, minutes=60 - now.minute)
+        # # set next posting time
+        # hours_until = 11 - now.hour
+        # hours_until = 24 + hours_until if hours_until < 0 else hours_until
+        # self.gru_nose_poster.change_interval(hours=hours_until, minutes=60 - now.minute)
 
     @gru_nose_poster.before_loop
     async def before_gru_nose_poster(self):

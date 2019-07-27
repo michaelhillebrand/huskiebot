@@ -1,5 +1,6 @@
 import logging
 import os
+from logging.handlers import TimedRotatingFileHandler
 
 import dotenv
 
@@ -47,9 +48,11 @@ def setup_bot():
 
 
 if __name__ == '__main__':
-    # Config
-    logging.basicConfig(filename='bot.log', level=logging.INFO)
     dotenv.load_dotenv()
+    handler = TimedRotatingFileHandler(filename='logs/bot.log', when='midnight', backupCount=30, utc=True)
+    logging.basicConfig(level=logging.DEBUG if os.environ['ENVIRONMENT'] == 'development' else logging.INFO,
+                        format='[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s',
+                        handlers=[handler])
 
     bot = setup_bot()
     bot.run(os.getenv('DISCORD_BOT_TOKEN'))
