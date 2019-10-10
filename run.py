@@ -14,6 +14,7 @@ from cogs.gru_nose import GruNosePoster
 from cogs.ping import Ping
 from cogs.presence_changer import PresenceChanger
 from cogs.quotes import Quotes
+from cogs.reminder import Reminder
 from cogs.rps import RockPaperScissors
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
@@ -40,7 +41,8 @@ def setup_bot():
         DankMemes,
         PresenceChanger,
         ChatModerator,
-        GruNosePoster
+        GruNosePoster,
+        Reminder
     ]
     for cog in cogs:
         bot_.add_cog(cog(bot=bot_))
