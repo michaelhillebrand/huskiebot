@@ -7,18 +7,6 @@ from cogs.base import BaseCog
 
 
 class PresenceChanger(BaseCog):
-    STATUSES = [
-        (0, 'shitposting memes'),
-        (0, 'Tuber Simulator'),
-        (2, 'the developers'),
-        (3, 'dank memes'),
-        (0, 'Uploading dank memes'),
-        (3, 'sad horse show'),
-        (0, 'the game'),
-        (0, 'Dungons and Drags'),
-        (3, 'the world burn'),
-    ]
-
     """
     from discord.enums:
     class ActivityType(Enum):
@@ -47,11 +35,11 @@ class PresenceChanger(BaseCog):
             discord.Activity
         """
         try:
-            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.STATUSES[self.index][0],
-                                                                                   name=self.STATUSES[self.index][1]))
+            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.bot.current_personality.presence_options[self.index][0],
+                                                                                   name=self.bot.current_personality.presence_options[self.index][1]))
             await self.bot.change_presence(activity=discord.Activity(
-                type=self.STATUSES[self.index][0],
-                name=self.STATUSES[self.index][1]
+                type=self.bot.current_personality.presence_options[self.index][0],
+                name=self.bot.current_personality.presence_options[self.index][1]
             ))
             self.index += 1
         except IndexError:
