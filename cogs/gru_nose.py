@@ -37,12 +37,12 @@ class GruNosePoster(BaseCog):
         now = datetime.datetime.now()
         if now.hour == 22:  # Noon
             logging.info("It's high noon! Attempting to post the latest gru nose picture")
-            gru_nose_filepath = os.path.join(BASE_PATH, 'gru/{}.png'.format(now.date()))
+            gru_nose_filepath = os.path.join(BASE_PATH, f'gru/{now.date()}.png')
             try:
-                logging.info("Posting file: {file}".format(file=gru_nose_filepath))
+                logging.info(f"Posting file: {gru_nose_filepath}")
                 await self.channel.send(file=discord.File(gru_nose_filepath))
             except FileNotFoundError as e:
-                logging.error("Failed to find file: {}".format(e.filename))
+                logging.error(f"Failed to find file: {e.filename}")
                 self.gru_nose_poster.cancel()
                 return
         # # set next posting time

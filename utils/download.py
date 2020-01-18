@@ -18,7 +18,7 @@ async def download(url):
     NamedTemporaryFile
 
     """
-    logging.info('Downloading file from {}'.format(url))
+    logging.info(f'Downloading file from {url}')
     r = requests.get(url, stream=True)
     if r.status_code == 200:
         file = NamedTemporaryFile()
@@ -28,7 +28,7 @@ async def download(url):
             # await asyncio.sleep(0.01)  # allows HuskieBot to respond to other requests
         file.flush()
         file.seek(0)
-        logging.info('Downloaded file successfully from {}'.format(url))
+        logging.info(f'Downloaded file successfully from {url}')
         return file
     else:
-        raise HTTPError('Received a non 200 status code: {}'.format(r.status_code))
+        raise HTTPError(f'Received a non 200 status code: {r.status_code}')

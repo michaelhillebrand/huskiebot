@@ -42,32 +42,16 @@ class RockPaperScissors(BaseCog):
                 game['ties'] += 1
             # TODO: Consider how to improve this in cases of even number for best_of. Right now, with a best_of = 4, the game ends if one side gets to 2 wins, even if there are stil 2 turns left so thee's a possibility of a tie
             if max(game['user_score'], game['bot_score']) >= math.ceil(game['best_of'] / 2):
-                await ctx.send('{user}\t\t\tHuskieBot\n'
-                                           '{user_move}\tvs.\t{bot_move}\n'
-                                           'GAME OVER\n'
-                                           'Final Score: {user_score}-{bot_score}-{ties}\n\n'
-                                           'Want to play again?'
-                                           .format(user=ctx.author.mention,
-                                                   user_move=move.capitalize(),
-                                                   bot_move=bot_move.capitalize(),
-                                                   user_score=game['user_score'],
-                                                   bot_score=game['bot_score'],
-                                                   ties=game['ties']
-                                                   )
-                                           )
+                await ctx.send(f'{ctx.author.mention}\t\t\tHuskieBot\n'
+                               f'{move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
+                               f'GAME OVER\n'
+                               f'Final Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}\n\n'
+                               f'Want to play again?')
                 self.stats.pop(ctx.author.id, None)
             else:
-                await ctx.send('{user}\t\t\tHuskieBot\n'
-                                           '{user_move}\tvs.\t{bot_move}\n'
-                                           'Current Score: {user_score}-{bot_score}-{ties}'
-                                           .format(user=ctx.author.mention,
-                                                   user_move=move.capitalize(),
-                                                   bot_move=bot_move.capitalize(),
-                                                   user_score=game['user_score'],
-                                                   bot_score=game['bot_score'],
-                                                   ties=game['ties']
-                                                   )
-                                           )
+                await ctx.send(f'{ctx.author.mention}\t\t\tHuskieBot\n'
+                               f'{move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
+                               f'Current Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}')
 
     def _initialize(self, ctx, best_of):
         self.stats.update({ctx.author.id: {
@@ -98,13 +82,9 @@ class RockPaperScissors(BaseCog):
             if self.stats.get(ctx.author.id, None):
                 game = self.stats[ctx.author.id]
                 await ctx.send(
-                    'I already have a game started with you.\n'
-                    'We are on turn {} with a best of {}.\n'
-                    'The current score is {}-{}-{}'.format(game['turn'],
-                                                           game['best_of'],
-                                                           game['user_score'],
-                                                           game['bot_score'],
-                                                           game['ties']))
+                    f"I already have a game started with you.\n"
+                    f"We are on turn {game['turn']} with a best of {game['best_of']}.\n"
+                    f"The current score is {game['user_score']}-{game['bot_score']}-{game['ties']}")
             else:
                 self._initialize(ctx, 3)
                 await ctx.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
@@ -114,8 +94,7 @@ class RockPaperScissors(BaseCog):
                 await ctx.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
             except ValueError:
                 if not self.stats.get(ctx.author.id, None):
-                    await ctx.send('We don\'t have a game going. '
-                                               'Start a game by using the !{} command'.format(ctx.command))
+                    await ctx.send(f'We don\'t have a game going. Start a game by using the !{ctx.command} command')
                 else:
                     if args[-1].lower() in self.CHOICES:
                         await self._play(ctx, args[-1].lower())

@@ -76,10 +76,11 @@ class Quotes(BaseCog):
             except KeyError:
                 await ctx.send('That is not a valid show')
             else:
-                await ctx.send('[{show}] {quote}'.format(show=show[0].title(), quote=quote))
+                await ctx.send(f'[{show[0].title()}] {quote}')
 
     @quote.command(name='count')
     async def quote_count(self, ctx):
         """HuskieBot will say how many quotes it currently has"""
-        await ctx.send("I have {} quotes from {} shows".format(sum([len(quotes) for _, quotes in self.SHOWS.items()]),
-                                                               len(list(self.SHOWS))))
+        total = sum([len(quotes) for _, quotes in self.SHOWS.items()])
+        shows = len(list(self.SHOWS))
+        await ctx.send(F"I have {total} quotes from {shows} shows")
