@@ -1,14 +1,17 @@
+import re
 from random import randint
 
 from discord.ext import commands
 
 from cogs.base import BaseCog
 
+dice_re = re.compile("^(?P<rolls>\d+)d(?P<type>\d+)$")
+
 
 class DiceRoll(BaseCog):
 
     @commands.command()
-    async def roll(self, ctx, sides_count: int):
+    async def roll(self, ctx, sides_count: str):
         """
         HuskieBot will roll a dice with n sides
 
@@ -22,7 +25,13 @@ class DiceRoll(BaseCog):
         int
             Random number from dice roll
         """
-        await ctx.send(randint(1, sides_count))
+        match = dice_re.match(sides_count)
+        if match:
+            rolls, dice_type = match.groups()
+            rolls = int(rolls)
+            await ctx.send(randint(rolls, rolls * int(dice_type)))
+        else:
+            await ctx.send(randint(1, int(sides_count)))
 
     @roll.error
     async def on_roll_error(self, ctx, error):
