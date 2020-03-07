@@ -61,8 +61,7 @@ class DankMemes(BaseCog):
     def cog_unload(self):
         self.dank_meme_uploader.cancel()
 
-    # @tasks.loop(hours=24)
-    @tasks.loop(minutes=1)
+    @tasks.loop(hours=6)
     async def dank_meme_uploader(self):
         """
         HuskieBot will scrap all new memes from the mods are asleep board and upload them
