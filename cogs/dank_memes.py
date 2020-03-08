@@ -75,10 +75,10 @@ class DankMemes(BaseCog):
         failed_uploads = 0
         while True:
             messages = await self.channel.history(limit=100, after=self.last_fetch, oldest_first=True).flatten()
-            self.last_fetch = datetime.datetime.utcnow()
             logging.debug(f'messages found: {len(messages)}')
             if len(messages) == 0:
                 break
+            self.last_fetch = messages[-1].created_at
             for message in messages:
                 for attachment in message.attachments:
                     file = await download(attachment.url)
