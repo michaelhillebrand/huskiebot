@@ -47,8 +47,8 @@ class PresenceChanger(BaseCog):
             discord.Activity
         """
         try:
-            logging.info("changing presence to: type: {type}, name: {name}".format(type=self.STATUSES[self.index][0],
-                                                                                   name=self.STATUSES[self.index][1]))
+            logging.info(f"changing presence to: type: {self.STATUSES[self.index][0]}, "
+                         f"name: {self.STATUSES[self.index][1]}")
             await self.bot.change_presence(activity=discord.Activity(
                 type=self.STATUSES[self.index][0],
                 name=self.STATUSES[self.index][1]

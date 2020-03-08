@@ -22,4 +22,4 @@ class ShutupWill(BaseCog):
         """
         if not self.will:
             self.will = ctx.bot.get_user(187364654455062528)
-        await ctx.send('{} Shut up!'.format(self.will.mention))
+        await ctx.send(f'{self.will.mention} Shut up!')

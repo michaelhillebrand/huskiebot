@@ -33,8 +33,7 @@ class ChatModerator(BaseCog, command_attrs={'hidden': True}):
             try:
                 if purge_limit < min_purge_limit:
                     raise ValueError
-                logging.info("Purging the last {limit} message(s) "
-                             "from channel: {channel}".format(limit=purge_limit, channel=ctx.channel.name))
+                logging.info(f"Purging the last {purge_limit} message(s) from channel: {ctx.channel.name}")
                 await ctx.channel.purge(limit=purge_limit + 1)
             except ValueError:
                 logging.warning(f'{ctx.author} failed to purge a channel with a purge limit of {purge_limit}')
