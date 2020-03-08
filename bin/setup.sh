@@ -43,3 +43,6 @@ deactivate
 
 # Create .env file
 cp .template.env .env
+
+# Creates log folder
+mkdir -p logs

@@ -114,3 +114,6 @@ ffmpeg/
 
 # PyCharm config Folder
 .idea/
+
+# persistent storage
+last_scrape.pkl

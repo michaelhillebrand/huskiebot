@@ -26,16 +26,16 @@ class Example(BaseCog):
         """
         channel = member.guild.system_channel
         if channel is not None:
-            await channel.send('Welcome {0.mention}.'.format(member))
+            await channel.send(f'Welcome {member.mention}.')
 
     @commands.command(hidden=True)
     async def hello(self, ctx, *, member: discord.Member = None):
         """Says hello"""
         member = member or ctx.author
         if self._last_member is None or self._last_member.id != member.id:
-            await ctx.send('Hello {0.name}'.format(member))
+            await ctx.send(f'Hello {member.name}')
         else:
-            await ctx.send('Hello {0.name}... This feels familiar.'.format(member))
+            await ctx.send(f'Hello {member.name}... This feels familiar.')
         self._last_member = member
 
     @commands.group(hidden=True)
@@ -44,7 +44,7 @@ class Example(BaseCog):
         In reality this just checks if a subcommand is being invoked.
         """
         if ctx.invoked_subcommand is None:
-            await ctx.send('No, {0.subcommand_passed} is not cool'.format(ctx))
+            await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
 
     @cool.command(name='bot')
     async def _bot(self, ctx):
