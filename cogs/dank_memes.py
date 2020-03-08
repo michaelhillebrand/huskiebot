@@ -1,20 +1,34 @@
+import datetime
 import logging
+import pickle
 import os
-import typing
-from io import BytesIO
 from random import randint
-from zipfile import ZipFile
 
 import discord
 from PIL import Image
-from discord.ext import commands
+from discord.ext import commands, tasks
 
-from cogs import MEDIA_PATH
+from cogs import MEDIA_PATH, BASE_PATH
 from cogs.base import BaseCog
 from utils.download import download
 
 
 class DankMemes(BaseCog):
+
+    def __init__(self, bot) -> None:
+        self.channel_id = int(os.getenv('MEME_CHANNEL'))
+        self.channel = None
+        self.last_fetch = None
+        try:
+            with open(f'{BASE_PATH}/last_scrape.pkl', 'rb') as f:
+                self.last_fetch = pickle.load(f)
+        except Exception:
+            pass
+        if self.channel_id:
+            self.dank_meme_uploader.start()
+        else:
+            logging.warning('No channel ID was provided')
+        super().__init__(bot)
 
     async def _process_image(self, file):
         """
@@ -31,102 +45,63 @@ class DankMemes(BaseCog):
         """
         file.seek(0)
         image = Image.open(file)
+        next_index = len(os.listdir(MEDIA_PATH)) + 1
         if image.format == 'GIF':
-            image.save(os.path.join(MEDIA_PATH, f'{len(os.listdir(MEDIA_PATH))}.gif'),
+            image.save(os.path.join(MEDIA_PATH, f'{next_index}.gif'),
                        save_all=True,
                        optimize=True
                        )
         else:
             image = image.convert(mode='RGB')
-            image.save(os.path.join(MEDIA_PATH, f'{len(os.listdir(MEDIA_PATH))}.jpg'),
+            image.save(os.path.join(MEDIA_PATH, f'{next_index}.jpg'),
                        format='JPEG',
                        optimize=True
                        )
 
-    async def _bulk_process(self, url):
-        """
-        Helper function for the dankbulkupload command
+    def cog_unload(self):
+        self.dank_meme_uploader.cancel()
 
-        Parameters
-        ----------
-        url : file to download
+    @tasks.loop(hours=6)
+    async def dank_meme_uploader(self):
+        """
+        HuskieBot will scrap all new memes from the mods are asleep board and upload them
 
         Returns
         -------
-        int
-            the number of files extracted
+            discord.Activity
         """
-        zip_file = ZipFile(await download(url))
-        file_count = len(zip_file.infolist())
-        for file in zip_file.infolist():
-            await self._process_image(BytesIO(zip_file.read(file.filename)))
-        zip_file.close()
-        return file_count
-
-    @commands.command()
-    async def dankbulkupload(self, ctx, url: typing.Optional[str]):
-        """
-        Uploads a zip of images from attachments or url to HuskieBot's library
-
-        Parameters
-        ----------
-        ctx : discord.ext.commands.Context
-        url : str (optional)
-
-        Returns
-        -------
-        str
-
-        """
-        file_count = 0
-        if ctx.message.attachments or url:
-            await ctx.send(f'{ctx.author.mention} I am downloading the file. This may take a long time. '
-                           'I will ping you when I finish.')
-        if ctx.message.attachments or url:
-            for attachment in ctx.message.attachments:
-                file_count += await self._bulk_process(attachment.url)
-        elif url:
-            file_count += await self._bulk_process(url)
-        else:
-            await ctx.send('No file or url has been provided')
-            return
-        logging.info(f'Successfully added {file_count} images to MEDIA')
-        await ctx.author.send(f'I finished processing your upload of {file_count} images. '
-                              'Shitpost away!')
-
-    @dankbulkupload.error
-    async def on_dankbulkupload_error(self, ctx, error):
-        logging.error(error)
-        await ctx.author.send(error)
-
-    @commands.command()
-    async def dankupload(self, ctx):
-        """
-        Uploads an image to HuskieBot's library
-
-        Parameters
-        ----------
-        ctx : discord.ext.commands.Context
-
-        Returns
-        -------
-        str
-
-        """
-        if not ctx.message.attachments:
-            await ctx.send('No file detected')
-        else:
-            images = os.listdir(MEDIA_PATH)
-            async with ctx.typing():
-                for attachment in ctx.message.attachments:
-                    file = await download(attachment.url)
+        logging.info("uploading dank memes")
+        now = datetime.datetime.utcnow()
+        successful_uploads = 0
+        failed_uploads = 0
+        messages = await self.channel.history(after=self.last_fetch).flatten()
+        logging.debug(f'messages found: {len(messages)}')
+        for message in messages:
+            for attachment in message.attachments:
+                file = await download(attachment.url)
+                try:
                     await self._process_image(file)
-                    await ctx.send(f'Dank image uploaded successfully (#{len(images) + 1})')
+                    successful_uploads += 1
+                except Exception:
+                    logging.warning('attachment was not an valid image')
+                    failed_uploads += 1
+        self.last_fetch = now
+        with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
+            pickle.dump(now, f)
+        logging.debug(f'{successful_uploads} files successfully uploaded')
+        logging.debug(f'{failed_uploads} files failed to upload')
+        if successful_uploads > 0:
+            await self.channel.send(f'{successful_uploads} dank meme(s) uploaded')
 
-    @dankupload.error
-    async def on_dankupload_error(self, ctx, error):
-        logging.error(error)
-        await ctx.channel.send(f'I got an error while uploading your file: {error}')
+    @dank_meme_uploader.before_loop
+    async def before_dank_meme_uploader(self):
+        await self.bot.wait_until_ready()
+        channel = self.bot.get_channel(self.channel_id)
+        if channel:
+            self.channel = channel
+        else:
+            logging.error('Channel ID was invalid')
+            raise ValueError
 
     @commands.group(invoke_without_command=True)
     async def dank(self, ctx):
@@ -145,7 +120,8 @@ class DankMemes(BaseCog):
         """
         if ctx.invoked_subcommand is None:
             images = os.listdir(MEDIA_PATH)
-            if len(images) == 0:
+            current_index = len(images)
+            if current_index == 0:
                 await ctx.send("I don't have any images to shitpost with")
             else:
                 try:
@@ -155,9 +131,9 @@ class DankMemes(BaseCog):
                     elif len(args) == 1:
                         index = int(args[0])
                     else:
-                        index = randint(1, len(images))
+                        index = randint(1, current_index)
 
-                    if index and index <= len(images):
+                    if index and index <= current_index:
                         await ctx.send(index, file=discord.File(os.path.join(MEDIA_PATH, f'{index}.jpg')))
                     else:
                         raise RuntimeError
@@ -167,5 +143,4 @@ class DankMemes(BaseCog):
     @dank.command(name='count')
     async def dank_count(self, ctx):
         """HuskieBot will say how many memes it currently has"""
-        images = os.listdir(MEDIA_PATH)
-        await ctx.send(f"I have {len(images)} dank memes")
+        await ctx.send(f"I have {len(os.listdir(MEDIA_PATH))} dank memes")
