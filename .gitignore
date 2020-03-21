@@ -118,3 +118,6 @@ ffmpeg/
 
 # persistent storage
 last_scrape.pkl
+
+# selenium web drivers
+/drivers
