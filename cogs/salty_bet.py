@@ -14,7 +14,9 @@ class SaltyBet(BaseCog):
 
     def __init__(self, bot) -> None:
         self.channel_id = int(os.getenv('SALTY_CHANNEL'))
+        self.salt_role_id = int(os.getenv('SALTY_ROLE_ID'))
         self.channel = None
+        self.salt_role = None
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         self.salty_driver = webdriver.Chrome(os.path.join(BASE_PATH, 'drivers/chromedriver'),
@@ -32,7 +34,8 @@ class SaltyBet(BaseCog):
     def cog_unload(self):
         self.tourney_alert.cancel()
 
-    @tasks.loop(minutes=30)
+    # @tasks.loop(minutes=30)
+    @tasks.loop(minutes=1)
     async def tourney_alert(self):
         """
         HuskieBot will check saltybet.com to see if a tourney is about to start
@@ -43,14 +46,17 @@ class SaltyBet(BaseCog):
         if 'more matches until the next tournament' in status[-1]:
             matches_left = int(status[0])
             if matches_left < self.ALERT_THRESHOLD or os.getenv('ENVIRONMENT') == 'development':
-                await self.channel.send(f'@Salt {matches_left} matches left until tournament')
+                await self.channel.send(f'{self.salt_role.mention} {matches_left} matches left until tournament')
 
     @tourney_alert.before_loop
     async def before_tourney_alert(self):
         await self.bot.wait_until_ready()
-        channel = self.bot.get_channel(self.channel_id)
-        if channel:
+        guild = self.bot.guilds[0]  # we assume the Huskiebot is onyl on 1 server
+        channel = guild.get_channel(self.channel_id)
+        role = guild.get_role(self.salt_role_id)
+        if channel and role:
             self.channel = channel
+            self.salt_role = role
         else:
-            logging.error('Channel ID was invalid')
+            logging.error('Channel or Salt role ID was invalid')
             raise ValueError
