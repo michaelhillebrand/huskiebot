@@ -78,8 +78,8 @@ class DankMemes(BaseCog):
             if len(messages) == 0:
                 break
             self.last_fetch = messages[-1].created_at
-            # with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
-            #     pickle.dump(self.last_fetch, f)
+            with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
+                pickle.dump(self.last_fetch, f)
             logging.debug(f'possible messages found: {len(messages)}')
             messages = [m for m in messages if m.author != self.bot.user and len(m.attachments) > 0]
             logging.debug(f'messages to upload: {len(messages)}')
