@@ -43,7 +43,7 @@ class SaltyBet(BaseCog):
         if 'more matches until the next tournament' in status[-1]:
             matches_left = int(status[0])
             if matches_left < self.ALERT_THRESHOLD or os.getenv('ENVIRONMENT') == 'development':
-                await self.channel.send(f'{matches_left} matches left until tournament')
+                await self.channel.send(f'@Salt {matches_left} matches left until tournament')
 
     @tourney_alert.before_loop
     async def before_tourney_alert(self):
