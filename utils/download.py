@@ -1,7 +1,7 @@
 import logging
 from tempfile import NamedTemporaryFile
 
-import requests
+import aiohttp
 from requests import HTTPError
 
 
@@ -19,16 +19,15 @@ async def download(url):
 
     """
     logging.info(f'Downloading file from {url}')
-    r = requests.get(url, stream=True)
-    if r.status_code == 200:
-        file = NamedTemporaryFile()
-        for chunk in r.iter_content(chunk_size=4096):
-            if chunk:  # filter out keep-alive new chunks
-                file.write(chunk)
-            # await asyncio.sleep(0.01)  # allows HuskieBot to respond to other requests
-        file.flush()
-        file.seek(0)
-        logging.info(f'Downloaded file successfully from {url}')
-        return file
-    else:
-        raise HTTPError(f'Received a non 200 status code: {r.status_code}')
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as r:
+            if r.status == 200:
+                file = NamedTemporaryFile()
+                async for chunk, _ in r.content.iter_chunks():
+                    file.write(chunk)
+                file.flush()
+                file.seek(0)
+                logging.info(f'Downloaded file successfully from {url}')
+                return file
+            else:
+                raise HTTPError(f'Received a non 200 status code: {r.status}')

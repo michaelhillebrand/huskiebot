@@ -87,8 +87,8 @@ class DankMemes(BaseCog):
                     try:
                         await self._process_image(file)
                         successful_uploads += 1
-                    except Exception:
-                        logging.warning('attachment was not an valid image')
+                    except Exception as e:
+                        logging.warning(e)
                         failed_uploads += 1
             logging.info(f'processed {len(messages)} images')
             with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
