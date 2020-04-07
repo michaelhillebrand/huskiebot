@@ -34,8 +34,7 @@ class SaltyBet(BaseCog):
     def cog_unload(self):
         self.tourney_alert.cancel()
 
-    # @tasks.loop(minutes=30)
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=15)
     async def tourney_alert(self):
         """
         HuskieBot will check saltybet.com to see if a tourney is about to start
