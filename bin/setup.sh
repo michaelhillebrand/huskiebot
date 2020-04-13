@@ -4,7 +4,7 @@ set -e
 APP_PATH=`pwd`
 
 # Install OS packages
-sudo apt install nasm pkg-config libopus0 python3 python3-dev python3-venv libffi-dev 
+sudo apt install nasm pkg-config libopus0 python3 python3-dev python3-venv libffi-dev unzip
 
 # Install ffmpeg
 if type ffmpeg > /dev/null; then
