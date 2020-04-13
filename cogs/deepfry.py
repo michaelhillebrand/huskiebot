@@ -1,8 +1,10 @@
 from io import BytesIO
-import discord
 import requests
-from PIL import Image, ImageOps, ImageEnhance
+
+import discord
 from discord.ext import commands
+from PIL import Image, ImageOps, ImageEnhance
+
 from cogs.base import BaseCog
 
 FILE_TYPES = [
