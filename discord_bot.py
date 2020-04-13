@@ -1,9 +1,8 @@
 import logging
 
-import discord
 from discord.ext import commands
 
-from cogs.poll import get_new_description, string_description_to_dictionary
+from cogs.poll import get_new_description, string_description_to_dictionary, generate_embed
 
 
 class HuskieBot(commands.Bot):
@@ -22,10 +21,7 @@ class HuskieBot(commands.Bot):
         description_dict = string_description_to_dictionary(updated_message.embeds[0].description)
         if "Poll" in updated_message.embeds[0].footer.text:
             new_description = get_new_description(description_dict, updated_message.reactions)
-            new_embed = discord.Embed(title=updated_message.embeds[0].title,
-                                      description=new_description,
-                                      colour=discord.Color.orange())
-            new_embed.set_footer(text='Poll'.format(updated_message.id))
+            new_embed = generate_embed(updated_message.embeds[0].title, new_description)
             await updated_message.edit(embed=new_embed)
 
     async def on_raw_reaction_remove(self, payload):
@@ -39,6 +35,5 @@ class HuskieBot(commands.Bot):
         description_dict = string_description_to_dictionary(updated_message.embeds[0].description)
         if "Poll" in updated_message.embeds[0].footer.text:
             new_description = get_new_description(description_dict, updated_message.reactions)
-            new_embed = discord.Embed(title=updated_message.embeds[0].title, description=new_description)
-            new_embed.set_footer(text='Poll'.format(updated_message.id))
+            new_embed = generate_embed(updated_message.embeds[0].title, new_description)
             await updated_message.edit(embed=new_embed)
