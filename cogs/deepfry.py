@@ -33,10 +33,17 @@ class Deepfry(BaseCog):
 
 
 def fry_to_shits(url) -> Image:
-    """ Downloads and deepfries the image
+    """
+    downloads and deepfries the image
 
-    :param url: image url
-    :return: Image object
+    Parameters
+    ----------
+    url : str
+
+    Returns
+    -------
+    Image
+        a Pill Image object
     """
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
@@ -57,9 +64,14 @@ def fry_to_shits(url) -> Image:
 
 
 def check_file_type(filename) -> bool:
-    """ Checks if the file type is in the list of accepted file types
+    """
+    checks if the file type is in the list of accepted file types
+    Parameters
+    ----------
+    filename : str
 
-    :param filename: name of the file from Discord
-    :return: True or False
+    Returns
+    -------
+    Bool
     """
     return filename.split('.')[-1] in FILE_TYPES
