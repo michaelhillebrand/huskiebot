@@ -7,14 +7,6 @@ from PIL import Image, ImageOps, ImageEnhance
 
 from cogs.base import BaseCog
 
-FILE_TYPES = [
-    'bmp',
-    'gif',
-    'jpg',
-    'jpeg',
-    'png'
-]
-
 
 class Colours:
     RED = (254, 0, 2)
@@ -22,10 +14,18 @@ class Colours:
 
 
 class Deepfry(BaseCog):
+    file_types = [
+        'bmp',
+        'gif',
+        'jpg',
+        'jpeg',
+        'png'
+    ]
+
     @commands.command()
     async def deepfry(self, ctx):
         for attachment in ctx.message.attachments:
-            if check_file_type(attachment.filename):
+            if check_file_type(attachment.filename, self.file_types):
                 img = fry_to_shits(attachment.url)
                 img.save('deepfry.jpg')
                 await ctx.send(file=discord.File('deepfry.jpg'))
@@ -34,7 +34,7 @@ class Deepfry(BaseCog):
                                .format(attachment.filename.split('.')[-1].upper()))
 
 
-def fry_to_shits(url) -> Image:
+def fry_to_shits(url: str) -> Image:
     """
     downloads and deepfries the image
 
@@ -65,15 +65,16 @@ def fry_to_shits(url) -> Image:
     return img
 
 
-def check_file_type(filename) -> bool:
+def check_file_type(filename: str, file_types: list) -> bool:
     """
     checks if the file type is in the list of accepted file types
     Parameters
     ----------
     filename : str
+    file_types : list
 
     Returns
     -------
     Bool
     """
-    return filename.split('.')[-1] in FILE_TYPES
+    return filename.split('.')[-1] in file_types
