@@ -7,7 +7,7 @@ APP_PATH=`pwd`
 sudo apt install nasm pkg-config libopus0 python3 python3-dev python3-venv
 
 # Install ffmpeg
-if type blah > /dev/null; then
+if type ffmpeg > /dev/null; then
   echo "ffmpeg has already been installed, skipping"
 else
   echo "ffmpeg does not exit on this system"
