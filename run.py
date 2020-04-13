@@ -17,6 +17,7 @@ from cogs.rps import RockPaperScissors
 from cogs.salty_bet import SaltyBet
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
+from cogs.poll import Poll
 from discord_bot import HuskieBot
 
 
@@ -41,7 +42,8 @@ def setup_bot():
         PresenceChanger,
         ChatModerator,
         # GruNosePoster
-        SaltyBet
+        SaltyBet,
+        Poll,
     ]
     for cog in cogs:
         bot_.add_cog(cog(bot=bot_))
