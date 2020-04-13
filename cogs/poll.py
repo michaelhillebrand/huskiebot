@@ -31,7 +31,8 @@ class Poll(BaseCog):
         """
         if MIN >= len(options) or len(options) > MAX:
             await ctx.message.delete()
-            await ctx.send(f"Number of options needs to be more than 1 and less than 10. Number of options given: {len(options)}.")
+            await ctx.send(
+                f"Number of options needs to be more than 1 and less than 10. Number of options given: {len(options)}.")
             return
         await ctx.message.delete()
         reactions = generate_reactions(options)
