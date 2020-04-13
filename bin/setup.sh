@@ -46,3 +46,14 @@ cp .template.env .env
 
 # Creates log folder
 mkdir -p logs
+
+# Install Chrome driver
+mkdir -p drivers
+if [[ -f drivers/chromedriver ]]; then
+  echo "chromedriver already installed"
+else
+  echo "Installing chromedriver"
+  wget https://chromedriver.storage.googleapis.com/81.0.4044.69/chromedriver_linux64.zip
+  unzip chromedriver_linux64.zip -d drivers/
+  rm chromedriver_linux64.zip
+fi
