@@ -28,7 +28,7 @@ class Example(BaseCog):
         """
         channel = member.guild.system_channel
         if channel is not None:
-            greeting = random.choice(self.bot.current_personality.greetings)
+            greeting = random.choice(self.bot.settings.get('current_personality').greetings)
             await channel.send(greeting.format(member.mention))
 
     @commands.command(hidden=True)

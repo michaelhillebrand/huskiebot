@@ -26,7 +26,7 @@ class EightBall(BaseCog):
         if arg[-1] != '?':
             await ctx.send('You need to ask a question')
         else:
-            choices = self.bot.current_personality.eight_ball_responses
+            choices = self.bot.settings.get('current_personality').eight_ball_responses
             await ctx.send(random.choice(choices))
 
     @eight_ball.error

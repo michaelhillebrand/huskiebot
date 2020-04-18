@@ -23,7 +23,7 @@ class Personality(BaseCog):
         -------
         None
         """
-        if (self.bot.last_personality_change + datetime.timedelta(minutes=10)) > datetime.datetime.utcnow():
+        if (self.bot.settings.get('last_personality_change') + datetime.timedelta(minutes=10)) > datetime.datetime.utcnow():
             raise RuntimeError('Changed personalities too soon')
         try:
             self.bot.current_personality = self.bot.available_personalities[personality.lower()]

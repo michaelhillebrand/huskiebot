@@ -117,7 +117,7 @@ ffmpeg/
 .idea/
 
 # persistent storage
-last_scrape.pkl
+settings.pkl
 
 # selenium web drivers
 /drivers
