@@ -71,23 +71,28 @@ class DankMemes(BaseCog):
             discord.Activity
         """
         logging.info("uploading dank memes")
-        now = datetime.datetime.utcnow()
         successful_uploads = 0
         failed_uploads = 0
-        messages = await self.channel.history(after=self.last_fetch).flatten()
-        logging.debug(f'messages found: {len(messages)}')
-        for message in messages:
-            for attachment in message.attachments:
-                file = await download(attachment.url)
-                try:
-                    await self._process_image(file)
-                    successful_uploads += 1
-                except Exception:
-                    logging.warning('attachment was not an valid image')
-                    failed_uploads += 1
-        self.last_fetch = now
-        with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
-            pickle.dump(now, f)
+        while True:
+            messages = await self.channel.history(limit=100, after=self.last_fetch, oldest_first=True).flatten()
+            if len(messages) == 0:
+                break
+            self.last_fetch = messages[-1].created_at
+            logging.debug(f'possible messages found: {len(messages)}')
+            messages = [m for m in messages if m.author != self.bot.user and len(m.attachments) > 0]
+            logging.debug(f'messages to upload: {len(messages)}')
+            for message in messages:
+                for attachment in message.attachments:
+                    file = await download(attachment.url)
+                    try:
+                        await self._process_image(file)
+                        successful_uploads += 1
+                    except Exception as e:
+                        logging.warning(e)
+                        failed_uploads += 1
+            logging.info(f'processed {len(messages)} images')
+            with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
+                pickle.dump(self.last_fetch, f)
         logging.debug(f'{successful_uploads} files successfully uploaded')
         logging.debug(f'{failed_uploads} files failed to upload')
         if successful_uploads > 0:

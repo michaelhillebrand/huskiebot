@@ -15,6 +15,7 @@ from cogs.ping import Ping
 from cogs.presence_changer import PresenceChanger
 from cogs.quotes import Quotes
 from cogs.rps import RockPaperScissors
+from cogs.salty_bet import SaltyBet
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
 from discord_bot import HuskieBot
@@ -40,6 +41,8 @@ def setup_bot():
         DankMemes,
         PresenceChanger,
         ChatModerator,
+        # GruNosePoster
+        SaltyBet,
         Personality
     ]
     for cog in cogs:

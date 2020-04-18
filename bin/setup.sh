@@ -4,10 +4,10 @@ set -e
 APP_PATH=`pwd`
 
 # Install OS packages
-sudo apt install nasm pkg-config libopus0 python3 python3-dev python3-venv
+sudo apt install nasm pkg-config libopus0 python3 python3-dev python3-venv libffi-dev unzip
 
 # Install ffmpeg
-if type blah > /dev/null; then
+if type ffmpeg > /dev/null; then
   echo "ffmpeg has already been installed, skipping"
 else
   echo "ffmpeg does not exit on this system"
@@ -46,3 +46,14 @@ cp .template.env .env
 
 # Creates log folder
 mkdir -p logs
+
+# Install Chrome driver
+mkdir -p drivers
+if [[ -f drivers/chromedriver ]]; then
+  echo "chromedriver already installed"
+else
+  echo "Installing chromedriver"
+  wget https://chromedriver.storage.googleapis.com/81.0.4044.69/chromedriver_linux64.zip
+  unzip chromedriver_linux64.zip -d drivers/
+  rm chromedriver_linux64.zip
+fi
