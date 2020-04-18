@@ -1,5 +1,5 @@
 import logging
-from random import randint
+import random
 
 from discord.ext import commands
 
@@ -27,7 +27,7 @@ class EightBall(BaseCog):
             await ctx.send('You need to ask a question')
         else:
             choices = self.bot.current_personality.eight_ball_responses
-            await ctx.send(choices[randint(0, len(choices) - 1)])
+            await ctx.send(random.choice(choices))
 
     @eight_ball.error
     async def on_eight_ball_error(self, ctx, error):

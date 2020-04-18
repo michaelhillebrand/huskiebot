@@ -1,7 +1,7 @@
 from personalities.base import Personality
 
 
-class BoJack (Personality):
+class BoJack(Personality):
     name = 'BoJack Horseman'
     avatar_path = 'bojack_horseman.jpg'
     greetings = (

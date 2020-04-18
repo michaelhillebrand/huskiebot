@@ -2,7 +2,7 @@ class Personality(object):
     name = 'Huskie Bot'
     avatar_path = None
     greetings = (
-        'Sup Neighbors!',
+        'Welcome {member}!',
     )
     eight_ball_responses = (
         'It is certain',

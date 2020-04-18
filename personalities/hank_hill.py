@@ -1,16 +1,16 @@
 from personalities.base import Personality
 
 
-class Hank (Personality):
+class Hank(Personality):
     name = 'Hank Hill'
     avatar_path = 'hank_hill.jpeg'
     greetings = (
-        'Welcome to Arlin neighbor!',
+        'Welcome to Arlin {member}!',
     )
     eight_ball_responses = (
-        "You're darn right, I'll tell you hwat",
-        'This question ain\'t right Peggy',
-        'No, got dangit',
+        "You're darn right, I'll tell you what",
+        "This question ain't right Peggy",
+        'No, got dang it',
     )
     triggers = (
         (['drug', 'drugs'], 'Why would anyone do drugs when you could just mow a lawn?')

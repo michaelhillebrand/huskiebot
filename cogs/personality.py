@@ -2,7 +2,6 @@ import datetime
 from io import BytesIO
 from os.path import join
 
-import discord
 from discord.ext import commands
 
 from cogs import IMAGES_PATH
@@ -13,8 +12,7 @@ class Personality(BaseCog):
 
     @commands.command()
     async def change_personality(self, ctx, personality: str) -> None:
-        """
-        HuskieBot will change to another personality
+        """HuskieBot will change to another personality
 
         Parameters
         ----------
@@ -31,6 +29,7 @@ class Personality(BaseCog):
             self.bot.current_personality = self.bot.available_personalities[personality.lower()]
         except KeyError:
             await ctx.send('That is not a valid personality')
+            return
         await ctx.me.edit(nick=self.bot.current_personality.name)
         if self.bot.current_personality.avatar_path:
             with open(join(IMAGES_PATH, self.bot.current_personality.avatar_path), 'rb') as file:
@@ -40,8 +39,7 @@ class Personality(BaseCog):
 
     @change_personality.error
     async def on_change_personality_error(self, ctx, error):
-        """
-        Handles error from change personality command
+        """Handles error from change personality command
 
         Parameters
         ----------
@@ -52,4 +50,4 @@ class Personality(BaseCog):
         -------
             str
         """
-        await ctx.send('I can\'t change personalities right now')
+        await ctx.send(error)
