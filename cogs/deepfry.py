@@ -1,4 +1,5 @@
-from io import BytesIO
+from tempfile import TemporaryFile
+
 import requests
 
 import discord
@@ -30,8 +31,7 @@ class Deepfry(BaseCog):
                 img.save('deepfry.jpg')
                 await ctx.send(file=discord.File('deepfry.jpg'))
             else:
-                await ctx.send(content='How the fuck am I supposed to deepfry a {} filetype?'
-                               .format(attachment.filename.split('.')[-1].upper()))
+                await ctx.send(content=f'How the fuck am I supposed to deepfry a {attachment.filename.split(".")[-1].upper()} filetype?')
 
 
 def fry_to_shits(url: str) -> Image:
@@ -48,7 +48,9 @@ def fry_to_shits(url: str) -> Image:
         a Pill Image object
     """
     response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
+    temp_file = TemporaryFile()
+    temp_file.write(response.content)
+    img = Image.open(temp_file)
     img = img.convert('RGB')
     width, height = img.width, img.height
     img = img.resize((int(width ** .75), int(height ** .75)), resample=Image.LANCZOS)
