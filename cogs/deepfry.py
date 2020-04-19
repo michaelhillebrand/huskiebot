@@ -29,9 +29,9 @@ class Deepfry(BaseCog):
         for attachment in ctx.message.attachments:
             if check_file_type(attachment.filename, self.file_types):
                 img = fry_to_shits(attachment.url)
-                img.save('deepfry.jpg')
-                await ctx.send(file=discord.File('deepfry.jpg'))
-                os.remove('deepfry.jpg')
+                img.save('tmp/deepfry.jpg')
+                await ctx.send(file=discord.File('tmp/deepfry.jpg'))
+                os.remove('tmp/deepfry.jpg')
             else:
                 await ctx.send(content=f'How the fuck am I supposed to deepfry a {attachment.filename.split(".")[-1].upper()} filetype?')
 
