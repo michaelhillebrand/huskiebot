@@ -1,3 +1,4 @@
+import os
 from tempfile import TemporaryFile
 
 import requests
@@ -30,6 +31,7 @@ class Deepfry(BaseCog):
                 img = fry_to_shits(attachment.url)
                 img.save('deepfry.jpg')
                 await ctx.send(file=discord.File('deepfry.jpg'))
+                os.remove('deepfry.jpg')
             else:
                 await ctx.send(content=f'How the fuck am I supposed to deepfry a {attachment.filename.split(".")[-1].upper()} filetype?')
 
