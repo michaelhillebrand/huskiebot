@@ -65,7 +65,9 @@ if [[ -f drivers/chromedriver ]]; then
   echo "chromedriver already installed, skipping install"
 else
   echo "Installing chromedriver"
+  cd drivers
   wget https://chromedriver.storage.googleapis.com/81.0.4044.69/chromedriver_linux64.zip
-  unzip chromedriver_linux64.zip -d drivers/
+  unzip chromedriver_linux64.zip
   rm chromedriver_linux64.zip
+  cd $APP_PATH
 fi
