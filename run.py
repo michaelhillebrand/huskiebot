@@ -1,5 +1,7 @@
+import argparse
 import logging
 import os
+import sys
 from logging.handlers import TimedRotatingFileHandler
 
 import dotenv
@@ -18,6 +20,29 @@ from cogs.salty_bet import SaltyBet
 from cogs.shutup_will import ShutupWill
 from cogs.voice import Voice
 from discord_bot import HuskieBot
+
+
+def parse_cogs(cogs_list: str) -> list:
+    """Parse the comma delineated string of cogs into a list of cog module names."""  # noqa # skip pylama "line too long"
+    logging.debug(f'Parsing list of cogs to disable: {cogs_list}')
+    return map(
+        lambda cog_name:  getattr(sys.modules['cogs'], cog_name),
+        cogs_list.split(',')
+    )
+
+
+def parse_args() -> argparse.Namespace:
+    """Define and parse command line arguments."""
+    parser = argparse.ArgumentParser(description='Run the HuskieBot')
+
+    parser.add_argument(
+        '--disable-cogs',
+        type=parse_cogs,
+        help='A list of cog module names to not enable on bot startup. '
+             'Comma separted list, no spaces'
+    )
+
+    return parser.parse_args()
 
 
 def setup_bot():
@@ -54,6 +79,9 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG if os.environ['ENVIRONMENT'] == 'development' else logging.INFO,
                         format='[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s',
                         handlers=[handler])
+
+    args = parse_args()
+    logging.debug(f'Args passed from commandline: {args}')
 
     bot = setup_bot()
     bot.run(os.getenv('DISCORD_BOT_TOKEN'))
