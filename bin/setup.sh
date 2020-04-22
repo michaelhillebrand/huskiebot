@@ -71,3 +71,30 @@ else
   rm chromedriver_linux64.zip
   cd $APP_PATH
 fi
+
+# Install Chrome
+if type google-chrome > /dev/null; then
+  echo "google-chrome already installed, skipping install"
+else
+  echo "google-chrome does not exit on this system, installing"
+  mkdir -p google-chrome
+
+  if [[ -f google-chrome/google-chrome-stable_current_amd64.deb ]]; then
+    echo "google-chrome .deb file already exists, skipping download"
+  else
+    echo "Getting google-chrome from repository..."
+    cd google-chrome
+    # wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add - # Get apt installation key
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    # Attempt to install, it will probably fail due to missing dependencies
+    # But we don't want the whole script to fail out. Putting it in a conditional makes it not fail out even though we have `set -e` set
+    # plus, when using &&, the first command maintains the exit code so we can still check it
+    sudo dpkg -i google-chrome-stable_current_amd64.deb && true
+    if [[ $? -ne 0 ]]; then # the install failed
+      sudo apt -f install # lets have apt fix the install by installing the necessary dependencies
+      sudo dpkg -i google-chrome-stable_current_amd64.deb # rerun the install, if it fails this time, we want the script to fail
+    fi
+    cd $APP_PATH
+    rm -r google-chrome
+  fi
+fi
