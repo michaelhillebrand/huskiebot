@@ -1,3 +1,5 @@
+"""Entry point to launch the Huskie Bot from."""
+
 import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
