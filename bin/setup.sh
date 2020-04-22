@@ -84,7 +84,7 @@ else
   else
     echo "Getting google-chrome from repository..."
     cd google-chrome
-    # wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add - # Get apt installation key
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add - # Get apt installation key
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     # Attempt to install, it will probably fail due to missing dependencies
     # But we don't want the whole script to fail out. Putting it in a conditional makes it not fail out even though we have `set -e` set
