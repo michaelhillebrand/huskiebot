@@ -121,3 +121,6 @@ last_scrape.pkl
 
 # selenium web drivers
 /drivers
+
+# Local Chrome install, if installed this way
+/google-chrome
