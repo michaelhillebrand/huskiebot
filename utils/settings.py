@@ -68,7 +68,7 @@ class Settings(object):
         -------
         None
         """
-        logging.debug('Updating settings')
+        logging.debug(f'Updating setting: {key} to {value}')
         # checks to see if rouge setting key passed
         if key not in self.data.keys():
             raise KeyError('Invalid settings passed')
