@@ -1,10 +1,14 @@
-# Branching
-feature/{branch-name} - For new features<br />
-enhance/{branch-name} - Updating an existing feature<br />
+# Contributing
+
+## Branching
+
+feature/{branch-name} - For new features  
+enhance/{branch-name} - Updating an existing feature  
 fix/{branch-name} - For bug fixes
 
-# Documentation Format
-```
+## Documentation Format
+
+```python
 """
 Summary line.
 
@@ -20,17 +24,19 @@ Type
     description of return (optional)
 """
 ```
-## Example
-```
+
+### Example
+
+```python
 def add(num1, num2):
     """
     adds 2 numbers
-    
+
     Parameters
     ----------
     num1 : Int
     num2 : Int
-    
+
     Returns
     -------
     Int
