@@ -76,7 +76,7 @@ fi
 if type google-chrome > /dev/null; then
   echo "google-chrome already installed, skipping install"
 else
-  echo "google-chrome does not exit on this system, installing"
+  echo "google-chrome does not exist on this system, installing"
   mkdir -p google-chrome
 
   if [[ -f google-chrome/google-chrome-stable_current_amd64.deb ]]; then
