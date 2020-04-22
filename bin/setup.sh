@@ -48,7 +48,12 @@ pip install -Ur requirements.txt
 deactivate
 
 # Create .env file
-cp .template.env .env
+if [[ -f .env ]]; then
+  echo ".env file already created, skipping"
+else
+  echo "Creating .env file from template"
+  cp .template.env .env
+fi
 
 # Creates log folder
 echo "Creating log folder"
