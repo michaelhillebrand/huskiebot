@@ -1,11 +1,14 @@
 """Entry point to launch the Huskie Bot from."""
 
+# Built-in modules
 import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 
+# Pip installed modules
 import dotenv
 
+# Local modules
 from cogs.chat_moderate import ChatModerator
 from cogs.dank_memes import DankMemes
 from cogs.dice_roll import DiceRoll
