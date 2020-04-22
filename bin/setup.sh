@@ -8,6 +8,8 @@ APP_PATH=`pwd`
 sudo apt install nasm pkg-config libopus0 python3 python3-dev python3-venv libffi-dev
 # For use by this setup script
 sudo apt install unzip
+# For use by the chromedriver
+sudo apt install libnss3 
 
 # Install ffmpeg
 if type ffmpeg > /dev/null; then
