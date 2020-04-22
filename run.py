@@ -52,7 +52,7 @@ def setup_bot():
                     "tasks, and tools used on Michael's Discord guild"
     )
 
-    cogs = [
+    cog_classes = [
         Example,
         DungeonMaster,
         Quotes,
@@ -68,8 +68,8 @@ def setup_bot():
         # GruNosePoster
         SaltyBet
     ]
-    for cog in cogs:
-        bot_.add_cog(cog(bot=bot_))
+    for cog_class in cog_classes:
+        bot_.add_cog(cog_class(bot=bot_))
     return bot_
 
 
