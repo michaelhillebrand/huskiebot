@@ -60,7 +60,7 @@ class Deepfry(BaseCog):
 
 def fry_to_shits(url: str, temp_file: NamedTemporaryFile) -> Image:
     """
-    downloads and deepfries the image
+    Download and deepfry the provided image.
 
     Parameters
     ----------
@@ -95,7 +95,8 @@ def fry_to_shits(url: str, temp_file: NamedTemporaryFile) -> Image:
 
 def check_file_type(filename: str, file_types: list) -> bool:
     """
-    checks if the file type is in the list of accepted file types
+    Check if the file type is in the list of accepted file types.
+
     Parameters
     ----------
     filename : str
