@@ -1,5 +1,4 @@
-import os
-from tempfile import TemporaryFile
+from tempfile import NamedTemporaryFile
 
 import requests
 
@@ -28,21 +27,28 @@ class Deepfry(BaseCog):
     async def deepfry(self, ctx):
         for attachment in ctx.message.attachments:
             if check_file_type(attachment.filename, self.file_types):
-                img = fry_to_shits(attachment.url)
-                img.save('tmp/deepfry.jpg')
-                await ctx.send(file=discord.File('tmp/deepfry.jpg'))
-                os.remove('tmp/deepfry.jpg')
+                with NamedTemporaryFile() as tmp_file:
+                    img = fry_to_shits(attachment.url, tmp_file)
+                    img.save(tmp_file.name, format='JPEG')
+                    await ctx.send(
+                        # Returns it with a name that ends in .jpg so Discord
+                        # will preview it correctly
+                        file=discord.File(tmp_file.name, 'deepfried.jpg')
+                    )
             else:
                 await ctx.send(content=f'How the fuck am I supposed to deepfry a {attachment.filename.split(".")[-1].upper()} filetype?')
 
 
-def fry_to_shits(url: str) -> Image:
+def fry_to_shits(url: str, temp_file: NamedTemporaryFile) -> Image:
     """
     downloads and deepfries the image
 
     Parameters
     ----------
     url : str
+        The URL to download the image from
+    temp_file: NamedTemporaryFile
+        A NamedTemporaryFile to store the image in while we work with it
 
     Returns
     -------
@@ -50,7 +56,6 @@ def fry_to_shits(url: str) -> Image:
         a Pill Image object
     """
     response = requests.get(url)
-    temp_file = TemporaryFile()
     temp_file.write(response.content)
     img = Image.open(temp_file)
     img = img.convert('RGB')
