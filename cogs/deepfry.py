@@ -73,6 +73,7 @@ def fry_to_shits(url: str, temp_file: NamedTemporaryFile) -> Image:
     -------
     Image
         a Pill Image object
+
     """
     response = requests.get(url)
     temp_file.write(response.content)
@@ -105,5 +106,6 @@ def check_file_type(filename: str, file_types: list) -> bool:
     Returns
     -------
     Bool
+
     """
     return filename.split('.')[-1] in file_types
