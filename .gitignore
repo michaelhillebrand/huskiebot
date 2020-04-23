@@ -121,6 +121,3 @@ last_scrape.pkl
 
 # selenium web drivers
 /drivers
-
-# deepfired image
-deepfry.jpg
