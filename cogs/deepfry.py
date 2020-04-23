@@ -2,11 +2,10 @@
 
 from tempfile import NamedTemporaryFile
 
-import requests
-
 import discord
 from discord.ext import commands
 from PIL import Image, ImageOps, ImageEnhance
+import requests
 
 from cogs.base import BaseCog
 
