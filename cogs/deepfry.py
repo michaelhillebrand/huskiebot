@@ -55,7 +55,7 @@ class Deepfry(BaseCog):
                         file=discord.File(tmp_file.name, 'deepfried.jpg')
                     )
             else:
-                await ctx.send(content=f'How the fuck am I supposed to deepfry a {attachment.filename.split(".")[-1].upper()} filetype?')
+                await ctx.send(content=f'How the fuck am I supposed to deepfry a {attachment.filename.split(".")[-1].upper()} filetype?')  # noqa # ignore line length since it's a single line string
 
 
 def fry_to_shits(url: str, temp_file: NamedTemporaryFile) -> Image:
