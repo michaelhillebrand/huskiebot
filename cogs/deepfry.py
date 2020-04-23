@@ -30,7 +30,7 @@ class Deepfry(BaseCog):
     ]
 
     @commands.command()
-    async def deepfry(self, ctx):
+    async def deepfry(self, ctx: discord.ext.commands.Context) -> None:
         """
         Take an attached image, deep fry it, then return the results.
 
