@@ -1,3 +1,5 @@
+"""A cog that provides a command to take an image and return a version that looks like it's been put in a deepfryer."""
+
 from tempfile import NamedTemporaryFile
 
 import requests
@@ -10,11 +12,15 @@ from cogs.base import BaseCog
 
 
 class Colours:
+    """Enum for colors used in the Deepfryer."""
+
     RED = (254, 0, 2)
     YELLOW = (255, 255, 15)
 
 
 class Deepfry(BaseCog):
+    """Provide a command that takes an image and returns a version that looks like it's been put in a deepfryer."""
+
     file_types = [
         'bmp',
         'gif',
@@ -25,6 +31,19 @@ class Deepfry(BaseCog):
 
     @commands.command()
     async def deepfry(self, ctx):
+        """
+        Take an attached image, deep fry it, then return the results.
+
+        Parameters
+        ----------
+        ctx : discord.ext.commands.Context
+
+        Returns
+        -------
+        discord.File
+            Dank Image
+
+        """
         for attachment in ctx.message.attachments:
             if check_file_type(attachment.filename, self.file_types):
                 with NamedTemporaryFile() as tmp_file:
