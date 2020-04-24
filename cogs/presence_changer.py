@@ -25,16 +25,15 @@ class PresenceChanger(BaseCog):
             discord.Activity
         """
         personality = self.bot.settings.get(self.bot.settings.CURRENT_PERSONALITY)
-        try:
-            presence = personality.presence_options[self.index]
-            logging.info(f"changing presence to: type: {presence[0]}, name: {presence[1]}")
-            await self.bot.change_presence(activity=discord.Activity(
-                type=presence[0],
-                name=presence[1]
-            ))
-            self.index += 1
-        except IndexError:
+        if self.index + 1 >= len(personality.presence_options):
             self.index = 0
+        presence = personality.presence_options[self.index]
+        logging.debug(f"changing presence to: type: {presence[0]}, name: {presence[1]}")
+        await self.bot.change_presence(activity=discord.Activity(
+            type=presence[0],
+            name=presence[1]
+        ))
+        self.index += 1
 
     @presence_changer.before_loop
     async def before_presence_changer(self):
