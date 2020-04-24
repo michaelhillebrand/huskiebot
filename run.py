@@ -1,3 +1,6 @@
+"""Entry point to launch the Huskie Bot from."""
+
+# Built-in modules
 import argparse
 import inspect
 import logging
@@ -5,8 +8,10 @@ import os
 import sys
 from logging.handlers import TimedRotatingFileHandler
 
+# Pip installed modules
 import dotenv
 
+# Local modules
 from cogs.chat_moderate import ChatModerator
 from cogs.dank_memes import DankMemes
 from cogs.deepfry import Deepfry
@@ -90,10 +95,17 @@ def setup_bot(cogs_to_disable: list) -> HuskieBot:
 
 if __name__ == '__main__':
     dotenv.load_dotenv()
-    handler = TimedRotatingFileHandler(filename='logs/bot.log', when='midnight', backupCount=30, utc=True)
-    logging.basicConfig(level=logging.DEBUG if os.environ['ENVIRONMENT'] == 'development' else logging.INFO,
-                        format='[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s',
-                        handlers=[handler])
+    handler = TimedRotatingFileHandler(
+        filename='logs/bot.log',
+        when='midnight',
+        backupCount=30,
+        utc=True
+    )
+    logging.basicConfig(
+        level=logging.DEBUG if os.environ['ENVIRONMENT'] == 'development' else logging.INFO,  # noqa # skip pylama "line too long"
+        format='[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s',
+        handlers=[handler]
+    )
 
     args = parse_args()
     logging.debug(f'Args passed from commandline: {args}')
