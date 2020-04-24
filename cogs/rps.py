@@ -1,5 +1,5 @@
 import math
-from random import randint
+import random
 
 import discord
 from discord.ext import commands
@@ -18,7 +18,7 @@ class RockPaperScissors(BaseCog):
 
     async def _play(self, ctx, move):
         if self.stats.get(ctx.author.id, None):
-            bot_move = self.CHOICES[randint(0, len(self.CHOICES) - 1)]
+            bot_move = random.choice(self.CHOICES)
             if bot_move == move:
                 result = 0
             elif (bot_move == self.ROCK and move == self.PAPER) or \

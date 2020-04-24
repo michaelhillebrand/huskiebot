@@ -1,6 +1,4 @@
-import datetime
 import logging
-import pickle
 import os
 from random import randint
 
@@ -8,7 +6,7 @@ import discord
 from PIL import Image
 from discord.ext import commands, tasks
 
-from cogs import MEDIA_PATH, BASE_PATH
+from cogs import MEDIA_PATH
 from cogs.base import BaseCog
 from utils.download import download
 
@@ -18,19 +16,15 @@ class DankMemes(BaseCog):
     def __init__(self, bot) -> None:
         self.channel_id = int(os.getenv('MEME_CHANNEL'))
         self.channel = None
-        self.last_fetch = None
-        try:
-            with open(f'{BASE_PATH}/last_scrape.pkl', 'rb') as f:
-                self.last_fetch = pickle.load(f)
-        except Exception:
-            pass
+        self.last_fetch = bot.settings.get('dank_last_fetch')
         if self.channel_id:
             self.dank_meme_uploader.start()
         else:
             logging.warning('No channel ID was provided')
         super().__init__(bot)
 
-    async def _process_image(self, file):
+    @classmethod
+    async def _process_image(cls, file) -> None:
         """
         Processes image/gif and saves it to hard drive
 
@@ -91,8 +85,7 @@ class DankMemes(BaseCog):
                         logging.warning(e)
                         failed_uploads += 1
             logging.info(f'processed {len(messages)} images')
-            with open(f'{BASE_PATH}/last_scrape.pkl', 'wb') as f:
-                pickle.dump(self.last_fetch, f)
+            self.bot.settings.set('dank_last_fetch', self.last_fetch)
         logging.debug(f'{successful_uploads} files successfully uploaded')
         logging.debug(f'{failed_uploads} files failed to upload')
         if successful_uploads > 0:

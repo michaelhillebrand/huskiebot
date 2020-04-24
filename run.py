@@ -11,6 +11,7 @@ from cogs.dice_roll import DiceRoll
 from cogs.dungeon_master import DungeonMaster
 from cogs.eight_ball import EightBall
 from cogs.example import Example
+from cogs.personality import Personality
 from cogs.ping import Ping
 from cogs.presence_changer import PresenceChanger
 from cogs.quotes import Quotes
@@ -42,6 +43,8 @@ def setup_bot():
         PresenceChanger,
         ChatModerator,
         # GruNosePoster
+        SaltyBet,
+        Personality,
         SaltyBet,
         Deepfry
     ]

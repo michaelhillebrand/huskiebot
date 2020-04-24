@@ -1,3 +1,5 @@
+import random
+
 import discord
 from discord.ext import commands
 
@@ -5,10 +7,7 @@ from cogs.base import BaseCog
 
 
 class Example(BaseCog):
-
-    def __init__(self, bot) -> None:
-        self._last_member = None
-        super().__init__(bot)
+    _last_member = None
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -26,7 +25,9 @@ class Example(BaseCog):
         """
         channel = member.guild.system_channel
         if channel is not None:
-            await channel.send(f'Welcome {member.mention}.')
+            personality = self.bot.settings.get('current_personality')
+            greeting = random.choice(personality.member_greetings)
+            await channel.send(greeting.format(member.mention))
 
     @commands.command(hidden=True)
     async def hello(self, ctx, *, member: discord.Member = None):
