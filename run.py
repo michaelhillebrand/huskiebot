@@ -1,5 +1,8 @@
+import argparse
+import inspect
 import logging
 import os
+import sys
 from logging.handlers import TimedRotatingFileHandler
 
 import dotenv
@@ -22,14 +25,40 @@ from cogs.voice import Voice
 from discord_bot import HuskieBot
 
 
-def setup_bot():
+def parse_cogs(cogs_list: str) -> list:
+    """Parse the comma delineated string of cogs into a list of cog module names."""  # noqa # skip pylama "line too long"
+    logging.debug(f'Parsing list of cogs to disable: {cogs_list}')
+    return [*map(
+        lambda cog_name:  getattr(sys.modules['cogs'], cog_name),
+        cogs_list.split(',')
+    )]
+
+
+def parse_args() -> argparse.Namespace:
+    """Define and parse command line arguments."""
+    parser = argparse.ArgumentParser(description='Run the HuskieBot')
+
+    parser.add_argument(
+        '-d',
+        '--disable-cogs',
+        type=parse_cogs,
+        help='A list of cog module names to not enable on bot startup. '
+             'Comma separted list, no spaces'
+    )
+
+    return parser.parse_args()
+
+
+def setup_bot(cogs_to_disable: list) -> HuskieBot:
+    """Instantiate the bot and add default cogs."""
+    logging.debug('Creating bot')
     bot_ = HuskieBot(
         command_prefix='!',
         description="HuskieBot is a collection of miscellaneous commands, "
                     "tasks, and tools used on Michael's Discord guild"
     )
 
-    cogs = [
+    cog_classes = [
         Example,
         DungeonMaster,
         Quotes,
@@ -48,8 +77,14 @@ def setup_bot():
         SaltyBet,
         Deepfry
     ]
-    for cog in cogs:
-        bot_.add_cog(cog(bot=bot_))
+
+    logging.debug('Adding cogs to bot')
+    for cog_class in cog_classes:
+        if not inspect.getmodule(cog_class) in cogs_to_disable:
+            logging.debug(f'Enabling cog {cog_class}')
+            bot_.add_cog(cog_class(bot=bot_))
+        else:
+            logging.debug(f"Skipping cog {cog_class}")
     return bot_
 
 
@@ -60,5 +95,8 @@ if __name__ == '__main__':
                         format='[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s',
                         handlers=[handler])
 
-    bot = setup_bot()
+    args = parse_args()
+    logging.debug(f'Args passed from commandline: {args}')
+
+    bot = setup_bot(args.disable_cogs)
     bot.run(os.getenv('DISCORD_BOT_TOKEN'))
