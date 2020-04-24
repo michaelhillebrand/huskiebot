@@ -49,6 +49,7 @@ def parse_args() -> argparse.Namespace:
 
 def setup_bot(cogs_to_disable: list) -> HuskieBot:
     """Instantiate the bot and add default cogs."""
+    logging.debug('Creating bot')
     bot_ = HuskieBot(
         command_prefix='!',
         description="HuskieBot is a collection of miscellaneous commands, "
@@ -72,16 +73,13 @@ def setup_bot(cogs_to_disable: list) -> HuskieBot:
         SaltyBet
     ]
 
-    logging.info("Disabling cogs specified from command line args")
-    for cog_to_disable in cogs_to_disable:
-        logging.debug(f'Checking if we can disable cog: {cog_to_disable}')
-        for cog_class in cog_classes:
-            if inspect.getmodule(cog_class) == cog_to_disable:
-                logging.debug(f'removing cog from cogs list: {cog_class}')
-                cog_classes.remove(cog_class)
-
+    logging.debug('Adding cogs to bot')
     for cog_class in cog_classes:
-        bot_.add_cog(cog_class(bot=bot_))
+        if not inspect.getmodule(cog_class) in cogs_to_disable:
+            logging.debug(f'Enabling cog {cog_class}')
+            bot_.add_cog(cog_class(bot=bot_))
+        else:
+            logging.debug(f"Skipping cog {cog_class}")
     return bot_
 
 
