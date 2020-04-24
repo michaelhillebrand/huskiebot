@@ -48,7 +48,8 @@ def parse_args() -> argparse.Namespace:
         '--disable-cogs',
         type=parse_cogs,
         help='A list of cog module names to not enable on bot startup. '
-             'Comma separted list, no spaces'
+             'Comma separted list, no spaces',
+        default=[]
     )
 
     return parser.parse_args()
