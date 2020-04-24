@@ -1,5 +1,5 @@
 import logging
-from random import randint
+import random
 
 from discord.ext import commands
 
@@ -7,28 +7,6 @@ from cogs.base import BaseCog
 
 
 class EightBall(BaseCog):
-    CHOICES = [
-        'It is certain',
-        'It is decidedly so',
-        'Without a doubt',
-        'Yes - Definitely',
-        'You may rely on it',
-        'As I see it, yes',
-        'Most likely',
-        'Outlook Good',
-        'Yes',
-        'Signs point to yes',
-        'Reply hasy, try again',
-        'Ask again later',
-        'Better not tell you now',
-        'Cannot predict now',
-        'Concentrate and ask again',
-        'Don\'t count on it',
-        'My reply is no',
-        'My sources say no',
-        'Outlook not so good',
-        'Very doubtful'
-    ]
 
     @commands.command(aliases=["8ball"])
     async def eight_ball(self, ctx, *, arg):
@@ -48,7 +26,8 @@ class EightBall(BaseCog):
         if arg[-1] != '?':
             await ctx.send('You need to ask a question')
         else:
-            await ctx.send(self.CHOICES[randint(0, len(self.CHOICES) - 1)])
+            choices = self.bot.settings.get('current_personality').eight_ball_responses
+            await ctx.send(random.choice(choices))
 
     @eight_ball.error
     async def on_eight_ball_error(self, ctx, error):

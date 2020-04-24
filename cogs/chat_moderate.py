@@ -1,5 +1,4 @@
 import logging
-import typing
 
 import discord
 from discord.ext import commands
@@ -11,7 +10,7 @@ class ChatModerator(BaseCog, command_attrs={'hidden': True}):
     strikes = {}
 
     @commands.command()
-    async def purge(self, ctx, purge_limit: typing.Optional[int] = 100):
+    async def purge(self, ctx: commands.Context, purge_limit: int = 100) -> None:
         """
         HuskieBot will clear n messages from channel
 
