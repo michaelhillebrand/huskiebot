@@ -28,9 +28,9 @@ class Personality(BaseCog):
         now = datetime.datetime.utcnow()
         settings = self.bot.settings
         last_personality_change = settings.get(settings.LAST_PERSONALITY_CHANGE)
-        # Check if the bot has been changed within the last 2 minutes
-        if last_personality_change and (last_personality_change + datetime.timedelta(minutes=2)) > now:
-            raise RuntimeError('Changed personalities too soon')
+        # Check if the bot has been changed within the last 5 minutes
+        if last_personality_change and (last_personality_change + datetime.timedelta(minutes=5)) > now:
+            raise RuntimeError("I just changed my personality, I can't do it again so soon")
         personality = self.bot.available_personalities.get(personality_slug.lower())
         if not personality:
             await ctx.send('That is not a valid personality')
@@ -60,4 +60,4 @@ class Personality(BaseCog):
         -------
         None
         """
-        await ctx.send(error.original.__str__())
+        await ctx.send("I can't change personalities right now")
