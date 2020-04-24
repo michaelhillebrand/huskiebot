@@ -37,6 +37,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Run the HuskieBot')
 
     parser.add_argument(
+        '-d',
         '--disable-cogs',
         type=parse_cogs,
         help='A list of cog module names to not enable on bot startup. '
