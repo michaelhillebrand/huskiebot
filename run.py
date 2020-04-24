@@ -6,6 +6,7 @@ import dotenv
 
 from cogs.chat_moderate import ChatModerator
 from cogs.dank_memes import DankMemes
+from cogs.deepfry import Deepfry
 from cogs.dice_roll import DiceRoll
 from cogs.dungeon_master import DungeonMaster
 from cogs.eight_ball import EightBall
@@ -44,6 +45,8 @@ def setup_bot():
         # GruNosePoster
         SaltyBet,
         Personality
+        SaltyBet,
+        Deepfry
     ]
     for cog in cogs:
         bot_.add_cog(cog(bot=bot_))
