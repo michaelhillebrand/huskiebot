@@ -7,11 +7,11 @@ from personalities.base import Personality
 
 
 class Settings(object):
-    __PATH = f'{BASE_PATH}/settings.pkl'
     CURRENT_PERSONALITY = 'current_personality'
     LAST_PERSONALITY_CHANGE = 'last_personality_change'
     DANK_LAST_FETCH = 'dank_last_fetch'
 
+    __PATH = f'{BASE_PATH}/settings.pkl'
     __DEFAULT = {
         CURRENT_PERSONALITY: Personality,
         LAST_PERSONALITY_CHANGE: None,
