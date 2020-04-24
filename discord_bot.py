@@ -16,7 +16,9 @@ class HuskieBot(commands.Bot):
         'bojack': BoJack
     }
 
-    settings = Settings()
+    def __init__(self, **options):
+        super().__init__(**options)
+        self.settings = Settings()
 
     async def on_ready(self) -> None:
         logging.info('Huskie Bot Online')
