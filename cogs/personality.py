@@ -25,17 +25,20 @@ class Personality(BaseCog):
         -------
         None
         """
+        now = datetime.datetime.utcnow()
         settings = self.bot.settings
         last_personality_change = settings.get(settings.LAST_PERSONALITY_CHANGE)
-        # Check if the bot has been changed within the last 10 minutes
-        if last_personality_change and \
-                (last_personality_change + datetime.timedelta(minutes=10)) > datetime.datetime.utcnow():
+        # Check if the bot has been changed within the last 2 minutes
+        if last_personality_change and (last_personality_change + datetime.timedelta(minutes=2)) > now:
             raise RuntimeError('Changed personalities too soon')
         personality = self.bot.available_personalities.get(personality_slug.lower())
         if not personality:
             await ctx.send('That is not a valid personality')
             return
-        settings.set(settings.CURRENT_PERSONALITY, personality)
+        settings.update({
+            settings.CURRENT_PERSONALITY: personality,
+            settings.LAST_PERSONALITY_CHANGE: now
+        })
         await ctx.me.edit(nick=personality.name)
         if personality.avatar_path:
             with open(join(IMAGES_PATH, personality.avatar_path), 'rb') as file:
