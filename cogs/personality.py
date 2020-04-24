@@ -35,15 +35,15 @@ class Personality(BaseCog):
         if not personality:
             await ctx.send('That is not a valid personality')
             return
-        settings.update({
-            settings.CURRENT_PERSONALITY: personality,
-            settings.LAST_PERSONALITY_CHANGE: now
-        })
-        await ctx.me.edit(nick=personality.name)
         if personality.avatar_path:
             with open(join(IMAGES_PATH, personality.avatar_path), 'rb') as file:
                 avatar = BytesIO(file.read())
                 await self.bot.user.edit(avatar=avatar.read())
+        await ctx.me.edit(nick=personality.name)
+        settings.update({
+            settings.CURRENT_PERSONALITY: personality,
+            settings.LAST_PERSONALITY_CHANGE: now
+        })
         await ctx.send(random.choice(personality.greetings))
 
     @change_personality.error
