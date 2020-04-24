@@ -7,18 +7,18 @@ from personalities.base import Personality
 
 
 class Settings(object):
-    PATH = f'{BASE_PATH}/settings.pkl'
+    __PATH = f'{BASE_PATH}/settings.pkl'
     CURRENT_PERSONALITY = 'current_personality'
     LAST_PERSONALITY_CHANGE = 'last_personality_change'
     DANK_LAST_FETCH = 'dank_last_fetch'
 
-    DEFAULT = {
+    __DEFAULT = {
         CURRENT_PERSONALITY: Personality,
         LAST_PERSONALITY_CHANGE: None,
         DANK_LAST_FETCH: None
     }
 
-    data = DEFAULT
+    data = __DEFAULT
 
     def __init__(self):
         self.load()
@@ -26,14 +26,14 @@ class Settings(object):
     def _save(self) -> None:
         """Saves settings to disk."""
         logging.debug('Saving Settings')
-        with open(self.PATH, 'wb') as f:
+        with open(self.__PATH, 'wb') as f:
             pickle.dump(self.data, f)
 
     def load(self) -> None:
         """Loads settings from disk into memory."""
         logging.debug('Loading Settings')
         try:
-            with open(self.PATH, 'rb') as f:
+            with open(self.__PATH, 'rb') as f:
                 self.data.update(pickle.load(f))
         except Exception as e:
             logging.warning(e)
