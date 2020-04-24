@@ -44,7 +44,7 @@ def setup_bot():
         ChatModerator,
         # GruNosePoster
         SaltyBet,
-        Personality
+        Personality,
         SaltyBet,
         Deepfry
     ]
