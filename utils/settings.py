@@ -34,7 +34,7 @@ class Settings(object):
         logging.debug('Loading Settings')
         try:
             with open(self.PATH, 'rb') as f:
-                self.data = pickle.load(f)
+                self.data.update(pickle.load(f))
         except Exception as e:
             logging.warning(e)
             self._save()
