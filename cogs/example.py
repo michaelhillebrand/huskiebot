@@ -7,10 +7,7 @@ from cogs.base import BaseCog
 
 
 class Example(BaseCog):
-
-    def __init__(self, bot) -> None:
-        self._last_member = None
-        super().__init__(bot)
+    _last_member = None
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -28,7 +25,8 @@ class Example(BaseCog):
         """
         channel = member.guild.system_channel
         if channel is not None:
-            greeting = random.choice(self.bot.settings.get('current_personality').greetings)
+            personality = self.bot.settings.get('current_personality')
+            greeting = random.choice(personality.member_greetings)
             await channel.send(greeting.format(member.mention))
 
     @commands.command(hidden=True)

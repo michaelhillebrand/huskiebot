@@ -23,7 +23,8 @@ class DankMemes(BaseCog):
             logging.warning('No channel ID was provided')
         super().__init__(bot)
 
-    async def _process_image(self, file):
+    @classmethod
+    async def _process_image(cls, file) -> None:
         """
         Processes image/gif and saves it to hard drive
 

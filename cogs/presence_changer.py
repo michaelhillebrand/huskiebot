@@ -24,8 +24,9 @@ class PresenceChanger(BaseCog):
         -------
             discord.Activity
         """
+        personality = self.bot.settings.get(self.bot.settings.CURRENT_PERSONALITY)
         try:
-            presence = self.bot.current_personality.presence_options[self.index]
+            presence = personality.presence_options[self.index]
             logging.info(f"changing presence to: type: {presence[0]}, name: {presence[1]}")
             await self.bot.change_presence(activity=discord.Activity(
                 type=presence[0],

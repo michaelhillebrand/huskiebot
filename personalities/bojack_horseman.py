@@ -5,6 +5,9 @@ class BoJack(Personality):
     name = 'BoJack Horseman'
     avatar_path = 'bojack_horseman.jpg'
     greetings = (
+        "Yeah, it's me, straight off your TV screens and into your shitty lives!",
+    )
+    member_greetings = (
         'Heeeeeey... You',
     )
     eight_ball_responses = (

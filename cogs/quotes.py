@@ -1,5 +1,4 @@
 import random
-import typing
 
 from discord.ext import commands
 
@@ -11,9 +10,12 @@ class Quotes(BaseCog):
     @commands.group(invoke_without_command=True)
     async def quote(self, ctx):
         """HuskieBot will say a quote related to its personality"""
-        await ctx.send(random.choice(self.bot.current_personality.quotes))
+        personality = self.bot.settings.get(self.bot.settings.CURRENT_PERSONALITY)
+        quote = random.choice(personality.quotes)
+        await ctx.send(quote)
 
     @quote.command(name='count')
     async def quote_count(self, ctx):
         """HuskieBot will say how many quotes it currently has"""
-        await ctx.send(f"I have {len(self.bot.current_personality.quotes)} quotes")
+        personality = self.bot.settings.get(self.bot.settings.CURRENT_PERSONALITY)
+        await ctx.send(f"I have {len(personality.quotes)} quotes")

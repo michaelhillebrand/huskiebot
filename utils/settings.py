@@ -1,22 +1,24 @@
-import datetime
 import logging
 import pickle
+from typing import Any
 
 from cogs import BASE_PATH
 from personalities.base import Personality
 
 
 class Settings(object):
+    PATH = f'{BASE_PATH}/settings.pkl'
+    CURRENT_PERSONALITY = 'current_personality'
+    LAST_PERSONALITY_CHANGE = 'last_personality_change'
+    DANK_LAST_FETCH = 'dank_last_fetch'
 
-    path = f'{BASE_PATH}/settings.pkl'
-
-    default = {
-        'current_personality': Personality,
-        'last_personality_change': datetime.datetime.utcnow(),
-        'dank_last_fetch': None
+    DEFAULT = {
+        CURRENT_PERSONALITY: Personality,
+        LAST_PERSONALITY_CHANGE: None,
+        DANK_LAST_FETCH: None
     }
 
-    data = default
+    data = DEFAULT
 
     def __init__(self):
         self.load()
@@ -24,45 +26,49 @@ class Settings(object):
     def _save(self) -> None:
         """Saves settings to disk."""
         logging.debug('Saving Settings')
-        with open(self.path, 'wb') as f:
+        with open(self.PATH, 'wb') as f:
             pickle.dump(self.data, f)
 
     def load(self) -> None:
         """Loads settings from disk into memory."""
         logging.debug('Loading Settings')
         try:
-            with open(self.path, 'rb') as f:
+            with open(self.PATH, 'rb') as f:
                 self.data = pickle.load(f)
         except Exception as e:
             logging.warning(e)
             self._save()
 
-    def get(self, key: str):
-        """Gets current value for key in settings.
+    def get(self, key: str, default: Any = None) -> Any:
+        """
+        Gets current value for key in settings.
 
         Parameters
         ----------
         key: str
+        default: Any (optional)
 
         Returns
         -------
-        None
+        Any
+
         """
         logging.debug(f'Getting setting for {key}')
-        return self.data[key]  # Intentional error is thrown
+        return self.data.get(key, default)
 
     def save(self) -> None:
         """Saves settings to disk."""
         logging.debug('Manual saving')
-        return self._save()
+        self._save()
 
-    def set(self, key: str, value) -> None:
-        """Updates setting with given value.
+    def set(self, key: str, value: Any) -> None:
+        """
+        Updates setting with given value.
 
         Parameters
         ----------
         key: str
-        value: any
+        value: Any
 
         Returns
         -------
@@ -84,7 +90,10 @@ class Settings(object):
             raise e
 
     def update(self, data: dict) -> None:
-        """Updates settings with given data.
+        """
+        Updates settings with given data.
+
+        Given a dict, the function will merge the settings with each key-value pair.
 
         Parameters
         ----------
@@ -93,6 +102,7 @@ class Settings(object):
         Returns
         -------
         None
+
         """
         logging.debug('Updating settings')
         # checks to see if rouge settings value passed

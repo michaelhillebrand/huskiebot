@@ -5,7 +5,10 @@ class Hank(Personality):
     name = 'Hank Hill'
     avatar_path = 'hank_hill.jpeg'
     greetings = (
-        'Welcome to Arlin {member}!',
+        "Howdy Neighbor!",
+    )
+    member_greetings = (
+        'Welcome to Arlen {member}!',
     )
     eight_ball_responses = (
         "You're darn right, I'll tell you what",

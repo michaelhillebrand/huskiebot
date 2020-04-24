@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from cogs.base import BaseCog
 
-dice_re = re.compile("^(?P<rolls>\d+)d(?P<type>\d+)$")
+dice_re = re.compile(r"^(?P<rolls>\d+)d(?P<type>\d+)$")
 
 
 class DiceRoll(BaseCog):

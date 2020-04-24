@@ -1,4 +1,5 @@
 import datetime
+import random
 from io import BytesIO
 from os.path import join
 
@@ -11,43 +12,49 @@ from cogs.base import BaseCog
 class Personality(BaseCog):
 
     @commands.command()
-    async def change_personality(self, ctx, personality: str) -> None:
-        """HuskieBot will change to another personality
+    async def change_personality(self, ctx: commands.Context, personality_slug: str) -> None:
+        """
+        HuskieBot will change to another personality
 
         Parameters
         ----------
         ctx : discord.ext.commands.Context
-        personality: str
+        personality_slug: str
 
         Returns
         -------
         None
         """
-        if (self.bot.settings.get('last_personality_change') + datetime.timedelta(minutes=10)) > datetime.datetime.utcnow():
+        settings = self.bot.settings
+        last_personality_change = settings.get(settings.LAST_PERSONALITY_CHANGE)
+        # Check if the bot has been changed within the last 10 minutes
+        if last_personality_change and \
+                (last_personality_change + datetime.timedelta(minutes=10)) > datetime.datetime.utcnow():
             raise RuntimeError('Changed personalities too soon')
-        try:
-            self.bot.current_personality = self.bot.available_personalities[personality.lower()]
-        except KeyError:
+        personality = self.bot.available_personalities.get(personality_slug.lower())
+        if not personality:
             await ctx.send('That is not a valid personality')
             return
-        await ctx.me.edit(nick=self.bot.current_personality.name)
-        if self.bot.current_personality.avatar_path:
-            with open(join(IMAGES_PATH, self.bot.current_personality.avatar_path), 'rb') as file:
+        settings.set(settings.CURRENT_PERSONALITY, personality)
+        await ctx.me.edit(nick=personality.name)
+        if personality.avatar_path:
+            with open(join(IMAGES_PATH, personality.avatar_path), 'rb') as file:
                 avatar = BytesIO(file.read())
                 await self.bot.user.edit(avatar=avatar.read())
-        await ctx.send(self.bot.current_personality.greetings[0])
+        await ctx.send(random.choice(personality.greetings))
 
     @change_personality.error
-    async def on_change_personality_error(self, ctx, error):
-        """Handles error from change personality command
+    async def on_change_personality_error(self, ctx: commands.Context, error: commands.CommandInvokeError) -> None:
+        """
+        Handles error from change personality command
 
         Parameters
         ----------
         ctx : discord.ext.commands.Context
-        error : Error
+        error : discord.ext.commands.CommandInvokeError
 
         Returns
         -------
-            str
+        None
         """
-        await ctx.send(error)
+        await ctx.send(error.original.__str__())
