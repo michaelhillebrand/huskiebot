@@ -26,7 +26,10 @@ from discord_bot import HuskieBot
 def parse_cogs(cogs_list: str) -> list:
     """Parse the comma delineated string of cogs into a list of cog module names."""  # noqa # skip pylama "line too long"
     logging.debug(f'Parsing list of cogs to disable: {cogs_list}')
-    return [cog for cog in cogs_list.split(',') if getattr(sys.modules['cogs'], cog)]
+    return [*map(
+        lambda cog_name:  getattr(sys.modules['cogs'], cog_name),
+        cogs_list.split(',')
+    )]
 
 
 def parse_args() -> argparse.Namespace:
