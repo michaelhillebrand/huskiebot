@@ -21,3 +21,7 @@ optional arguments:
   --disable-cogs DISABLE_COGS
                         A list of cog module names to not enable on bot startup. Comma separted list, no spaces
 ```
+
+## Contributing
+
+See the [Contributing](./CONTRIBUTING.md) guide for info on how to start contributing to the project.
