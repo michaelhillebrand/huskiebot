@@ -5,6 +5,7 @@ from discord.ext import commands
 from personalities.base import Personality
 from personalities.bojack_horseman import BoJack
 from personalities.hank_hill import Hank
+from personalities.redditor import Redditor
 from utils.settings import Settings
 
 
@@ -13,7 +14,8 @@ class HuskieBot(commands.Bot):
     available_personalities = {
         'default': Personality,
         'hank': Hank,
-        'bojack': BoJack
+        'bojack': BoJack,
+        'redditor': Redditor,
     }
 
     def __init__(self, **options):
