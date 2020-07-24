@@ -7,7 +7,7 @@ from cogs.base import BaseCog
 class Ping(BaseCog):
 
     @commands.command()
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context):
         """
         HuskieBot will delete the message immediately
 

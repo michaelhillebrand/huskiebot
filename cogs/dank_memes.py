@@ -1,6 +1,9 @@
 import logging
 import os
+from io import BytesIO
 from random import randint
+from tempfile import NamedTemporaryFile
+from typing import Union
 
 import discord
 from PIL import Image
@@ -24,9 +27,9 @@ class DankMemes(BaseCog):
         super().__init__(bot)
 
     @classmethod
-    async def _process_image(cls, file) -> None:
+    async def _process_image(cls, file: Union[BytesIO, NamedTemporaryFile]) -> None:
         """
-        Processes image/gif and saves it to hard drive
+        Processes image/gif and saves it to hard drive.
 
         Parameters
         ----------
@@ -58,7 +61,7 @@ class DankMemes(BaseCog):
     @tasks.loop(hours=6)
     async def dank_meme_uploader(self):
         """
-        HuskieBot will scrap all new memes from the mods are asleep board and upload them
+        HuskieBot will scrap all new memes from the mods are asleep board and upload them.
 
         Returns
         -------
@@ -102,9 +105,9 @@ class DankMemes(BaseCog):
             raise ValueError
 
     @commands.group(invoke_without_command=True)
-    async def dank(self, ctx):
+    async def dank(self, ctx: commands.Context):
         """
-        HuskieBot shitposts an image from its library
+        HuskieBot shit posts an image from its library.
 
         Parameters
         ----------
@@ -139,6 +142,18 @@ class DankMemes(BaseCog):
                     await ctx.send('That is not a valid meme')
 
     @dank.command(name='count')
-    async def dank_count(self, ctx):
-        """HuskieBot will say how many memes it currently has"""
+    async def dank_count(self, ctx: commands.Context):
+        """
+        HuskieBot will say how many memes it currently has.
+
+        Parameters
+        ----------
+        ctx : discord.ext.commands.Context
+
+        Returns
+        -------
+        Int
+            The number of dank images in the media folder
+
+        """
         await ctx.send(f"I have {len(os.listdir(MEDIA_PATH))} dank memes")

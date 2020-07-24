@@ -3,6 +3,7 @@ from personalities.base import Personality
 
 class Hank(Personality):
     name = 'Hank Hill'
+    slug = 'hank-hill'
     avatar_path = 'hank_hill.jpeg'
     greetings = (
         "Howdy Neighbor!",

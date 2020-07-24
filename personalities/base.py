@@ -1,5 +1,6 @@
 class Personality(object):
     name = 'Huskie Bot'
+    slug = 'default'
     avatar_path = None
     greetings = (
         "Hey, What's up?",

@@ -1,8 +1,8 @@
+import datetime
 import math
 import random
 
-import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from cogs.base import BaseCog
 
@@ -16,42 +16,21 @@ class RockPaperScissors(BaseCog):
 
     CHOICES = [ROCK, PAPER, SCISSORS]
 
-    async def _play(self, ctx, move):
-        if self.stats.get(ctx.author.id, None):
-            bot_move = random.choice(self.CHOICES)
-            if bot_move == move:
-                result = 0
-            elif (bot_move == self.ROCK and move == self.PAPER) or \
-                    (bot_move == self.PAPER and move == self.SCISSORS) or \
-                    (bot_move == self.SCISSORS and move == self.ROCK):
-                result = 1
-            elif (bot_move == self.ROCK and move == self.SCISSORS) or \
-                    (bot_move == self.PAPER and move == self.ROCK) or \
-                    (bot_move == self.SCISSORS and move == self.PAPER):
-                result = -1
-            else:
-                result = -2
-            game = self.stats[ctx.author.id]
-            game['turn'] += 1
-            game['history'].append({'bot': bot_move, 'user': move, 'result': result})
-            if result == 1:
-                game['user_score'] += 1
-            elif result == -1:
-                game['bot_score'] += 1
-            elif result == 0:
-                game['ties'] += 1
-            # TODO: Consider how to improve this in cases of even number for best_of. Right now, with a best_of = 4, the game ends if one side gets to 2 wins, even if there are stil 2 turns left so thee's a possibility of a tie
-            if max(game['user_score'], game['bot_score']) >= math.ceil(game['best_of'] / 2):
-                await ctx.send(f'{ctx.author.mention}\t\t\tHuskieBot\n'
-                               f'{move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
-                               f'GAME OVER\n'
-                               f'Final Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}\n\n'
-                               f'Want to play again?')
-                self.stats.pop(ctx.author.id, None)
-            else:
-                await ctx.send(f'{ctx.author.mention}\t\t\tHuskieBot\n'
-                               f'{move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
-                               f'Current Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}')
+    # bot move is first, human move is second. result is for human
+    MATRIX = {
+        ROCK: {
+            PAPER: 1,
+            SCISSORS: -1
+        },
+        PAPER: {
+            SCISSORS: 1,
+            ROCK: -1
+        },
+        SCISSORS: {
+            ROCK: 1,
+            PAPER: -1
+        }
+    }
 
     def _initialize(self, ctx, best_of):
         self.stats.update({ctx.author.id: {
@@ -61,45 +40,106 @@ class RockPaperScissors(BaseCog):
             'bot_score': 0,
             'ties': 0,
             'best_of': best_of,
+            'last_played': datetime.datetime.utcnow()
         }})
 
+    @tasks.loop(hours=1)
+    async def game_cleaner(self):
+        """Cleans old games to save RAM."""
+        to_remove = [player_id for player_id, game in self.stats.items()
+                     if (game['last_played'] + datetime.timedelta(hours=1)) < datetime.datetime.utcnow()]
+        for player_id in to_remove:
+            del self.stats[player_id]
+
     @commands.command()
-    async def rps(self, ctx):
+    async def rps(self, ctx: commands.Context, move: str = ''):
         """
-        HuskieBot will play a game of ROCK, PAPER, Scissors with user
+        HuskieBot will play a game of Rock, Paper, Scissors with user
 
         Parameters
         ----------
-        message : discord.Message
+        ctx : discord.ext.commands.Context
+        move : str
 
         Returns
         -------
         str
 
         """
-        args = ctx.message.content.split(' ')[1:]
-        if len(args) == 0:
-            if self.stats.get(ctx.author.id, None):
-                game = self.stats[ctx.author.id]
-                await ctx.send(
-                    f"I already have a game started with you.\n"
-                    f"We are on turn {game['turn']} with a best of {game['best_of']}.\n"
-                    f"The current score is {game['user_score']}-{game['bot_score']}-{game['ties']}")
+        human_move = move.lower()
+        game = self.stats.get(ctx.author.id)
+        if game:
+            bot_move = random.choice(self.CHOICES)
+            result = 0 if human_move == bot_move else self.MATRIX[bot_move][human_move]
+            if result == 1:
+                field = 'user_score'
+            elif result == -1:
+                field = 'bot_score'
             else:
-                self._initialize(ctx, 3)
-                await ctx.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
-        elif len(args) == 1:
-            try:
-                self._initialize(ctx, int(args[-1]))
-                await ctx.send('Lets play! Send me a move. (!rps rock, !rps paper, !rps scissors)')
-            except ValueError:
-                if not self.stats.get(ctx.author.id, None):
-                    await ctx.send(f'We don\'t have a game going. Start a game by using the !{ctx.command} command')
-                else:
-                    if args[-1].lower() in self.CHOICES:
-                        await self._play(ctx, args[-1].lower())
-                    else:
-                        await ctx.send('That is not a valid move')
-
+                field = 'ties'
+            game.update({
+                'turn': game['turn'] + 1,
+                'history': game['history'].append({'bot': bot_move, 'user': human_move, 'result': result}),
+                'last_played': datetime.datetime.utcnow(),
+                field: game[field] + 1
+            })
+            if max(game['user_score'], game['bot_score']) >= math.ceil(game['best_of'] / 2):
+                await ctx.send(f'{ctx.author.mention}\t\t\tHuskieBot\n'
+                               f'{human_move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
+                               f'GAME OVER\n'
+                               f'Final Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}\n\n'
+                               f'Want to play again?')
+                self.stats.pop(ctx.author.id, None)
+            else:
+                await ctx.send(f'{ctx.author.mention}\t\t\tHuskieBot\n'
+                               f'{human_move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
+                               f'Current Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}')
         else:
-            await ctx.send('That is not a valid argument')
+            await ctx.send(f'We don\'t have a game going. Start a game by using the !{ctx.command} command')
+
+    @rps.command(name='stop')
+    async def rps_stop(self, ctx: commands.Context):
+        """
+        HuskieBot will clear the game it is currently playing with the user.
+
+        Parameters
+        ----------
+        ctx : discord.ext.commands.Context
+
+        Returns
+        -------
+        Int
+            The number of dank images in the media folder
+
+        """
+        game = self.stats.get(ctx.author.id)
+        if game:
+            self.stats.pop(ctx.author.id, None)
+            await ctx.send(f"Thanks for rage quitting! Try not to be so salty next time")
+        else:
+            await ctx.send(f"I don't have a game started with you")
+
+    @rps.command(name='start')
+    async def rps_start(self, ctx: commands.Context):
+        """
+        HuskieBot will start a new game with the user.
+
+        Parameters
+        ----------
+        ctx : discord.ext.commands.Context
+
+        Returns
+        -------
+        Int
+            The number of dank images in the media folder
+
+        """
+        game = self.stats.get(ctx.author.id)
+        if game:
+            await ctx.send(
+                f"I already have a game started with you.\n"
+                f"We are on turn {game['turn']} with a best of {game['best_of']}.\n"
+                f"The current score is {game['user_score']}-{game['bot_score']}-{game['ties']}")
+        else:
+            self._initialize(ctx, 3)
+            await ctx.send('Lets play! Send me a move (!rps rock, !rps paper, !rps scissors)')

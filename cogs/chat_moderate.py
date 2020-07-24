@@ -40,8 +40,3 @@ class ChatModerator(BaseCog, command_attrs={'hidden': True}):
         else:
             logging.warning(f'{ctx.author} failed to purge a channel')
             await ctx.send('You do no have the permissions to do that')
-
-    @commands.command()
-    async def chat_moderate(self, ctx):
-        """(NOT IMPLEMENTED YET) Enable or disable chat moderation"""
-        pass

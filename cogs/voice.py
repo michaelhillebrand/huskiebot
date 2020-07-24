@@ -1,3 +1,5 @@
+import logging
+
 from discord.ext import commands
 
 from cogs.base import BaseCog
@@ -5,14 +7,15 @@ from cogs.base import BaseCog
 
 class Voice(BaseCog):
 
-    def _get_current_voice_client(self, ctx):
+    def _get_current_voice_client(self, ctx: commands.Context):
+        """Retreives bot's current client (if any)."""
         for vc in ctx.bot.voice_clients:
             if vc.guild == ctx.guild:
                 return vc
         return None
 
     @commands.command()
-    async def invitebot(self, ctx):
+    async def invite_bot(self, ctx: commands.Context):
         """
         HuskieBot will join user's voice channel
 
@@ -35,12 +38,13 @@ class Voice(BaseCog):
                 vc = await ctx.author.voice.channel.connect()
             # vc.play(FFmpegPCMAudio('/home/michael/i_am_here.mp3'))
 
-    @invitebot.error
-    async def on_invitebot_error(self, ctx, error):
+    @invite_bot.error
+    async def on_invitebot_error(self, ctx: commands.Context, error: commands.CommandInvokeError):
+        logging.error(error)
         await ctx.send('Sorry, there was an error joining your voice channel')
 
     @commands.command()
-    async def disconnectbot(self, ctx):
+    async def disconnect_bot(self, ctx: commands.Context):
         """
         HuskieBot will disconnect from its voice channel
 
