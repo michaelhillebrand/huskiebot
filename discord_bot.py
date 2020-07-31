@@ -24,6 +24,5 @@ class HuskieBot(commands.Bot):
         self.settings = Settings()
         self.help_command = HuskieBotHelpCommand()
 
-    @staticmethod
     async def on_ready(self) -> None:
         logging.info('Huskie Bot Online')
