@@ -10,7 +10,7 @@ class Example(BaseCog):
     _last_member = None
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: discord.Member):
         """
         HuskieBot will welcome new users to the server
 
@@ -30,7 +30,7 @@ class Example(BaseCog):
             await channel.send(greeting.format(member.mention))
 
     @commands.command(hidden=True)
-    async def hello(self, ctx, *, member: discord.Member = None):
+    async def hello(self, ctx: commands.Context, *, member: discord.Member = None):
         """Says hello"""
         member = member or ctx.author
         if self._last_member is None or self._last_member.id != member.id:
@@ -40,7 +40,7 @@ class Example(BaseCog):
         self._last_member = member
 
     @commands.group(hidden=True)
-    async def cool(self, ctx):
+    async def cool(self, ctx: commands.Context):
         """Says if a user is cool.
         In reality this just checks if a subcommand is being invoked.
         """
@@ -48,11 +48,11 @@ class Example(BaseCog):
             await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
 
     @cool.command(name='bot')
-    async def _bot(self, ctx):
+    async def _bot(self, ctx: commands.Context):
         """Is the bot cool?"""
         await ctx.send('Yes, the bot is cool.')
 
     @commands.command(hidden=True)
-    async def tick(self, ctx):
+    async def tick(self, ctx: commands.Context):
         """Responds with "tock" to prove that commands work"""
         await ctx.send('tock')

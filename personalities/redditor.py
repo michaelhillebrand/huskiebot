@@ -3,6 +3,7 @@ from personalities.base import Personality
 
 class Redditor(Personality):
     name = 'A Redditor'
+    slug = 'reddit'
     avatar_path = 'redditor.png'
     greetings = (
         "Ah yes, Stonks",

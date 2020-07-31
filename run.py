@@ -77,10 +77,8 @@ def setup_bot(cogs_to_disable: list) -> HuskieBot:
         DankMemes,
         PresenceChanger,
         ChatModerator,
-        # GruNosePoster
         SaltyBet,
         Personality,
-        SaltyBet,
         Deepfry
     ]
 

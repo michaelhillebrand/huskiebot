@@ -50,7 +50,7 @@ class SaltyBet(BaseCog):
     @tourney_alert.before_loop
     async def before_tourney_alert(self):
         await self.bot.wait_until_ready()
-        guild = self.bot.guilds[0]  # we assume the Huskiebot is onyl on 1 server
+        guild = self.bot.guilds[0]  # we assume the Huskiebot is only on 1 server
         channel = guild.get_channel(self.channel_id)
         role = guild.get_role(self.salt_role_id)
         if channel and role:

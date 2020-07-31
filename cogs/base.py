@@ -9,5 +9,5 @@ class BaseCog(commands.Cog):
         self.bot = bot
         super().__init__()
 
-    async def cog_before_invoke(self, ctx):
+    async def cog_before_invoke(self, ctx: commands.Context) -> None:
         logging.debug(f'{ctx.author} invoked command {ctx.command} with message {ctx.message.content}')

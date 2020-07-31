@@ -7,9 +7,9 @@ class ShutupWill(BaseCog):
     will = None
 
     @commands.command()
-    async def shutup(self, ctx):
+    async def shutup(self, ctx: commands.Context):
         """
-        HuskieBot tells Will to shutup
+        HuskieBot tells Will to shut up
 
         Parameters
         ----------

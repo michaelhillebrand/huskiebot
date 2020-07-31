@@ -1,4 +1,5 @@
 import datetime
+import logging
 import random
 from io import BytesIO
 from os.path import join
@@ -11,8 +12,15 @@ from cogs.base import BaseCog
 
 class Personality(BaseCog):
 
+    @commands.command(aliases=["personalities"])
+    async def list_personalities(self, ctx: commands.Context):
+        """ HuskieBot will list available personalities to change to."""
+        personality_list = '\n'.join(f'{personality.name} ({personality.slug})' for _, personality
+                                     in self.bot.available_personalities.items())
+        await ctx.send(personality_list)
+
     @commands.command()
-    async def change_personality(self, ctx: commands.Context, personality_slug: str) -> None:
+    async def change_personality(self, ctx: commands.Context, personality_slug: str):
         """
         HuskieBot will change to another personality
 
@@ -47,7 +55,7 @@ class Personality(BaseCog):
         await ctx.send(random.choice(personality.greetings))
 
     @change_personality.error
-    async def on_change_personality_error(self, ctx: commands.Context, error: commands.CommandInvokeError) -> None:
+    async def on_change_personality_error(self, ctx: commands.Context, error: commands.CommandInvokeError):
         """
         Handles error from change personality command
 
@@ -60,4 +68,5 @@ class Personality(BaseCog):
         -------
         None
         """
+        logging.error(error)
         await ctx.send("I can't change personalities right now")

@@ -12,10 +12,10 @@ from utils.settings import Settings
 class HuskieBot(commands.Bot):
 
     available_personalities = {
-        'default': Personality,
-        'hank': Hank,
-        'bojack': BoJack,
-        'redditor': Redditor,
+        Personality.slug: Personality,
+        Hank.slug: Hank,
+        BoJack.slug: BoJack,
+        Redditor.slug: Redditor,
     }
 
     def __init__(self, **options):
