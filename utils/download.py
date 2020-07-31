@@ -5,7 +5,7 @@ import aiohttp
 from requests import HTTPError
 
 
-async def download(url):
+async def download(url: str):
     """
     Downloads file from url
 
