@@ -51,7 +51,7 @@ class RockPaperScissors(BaseCog):
         for player_id in to_remove:
             del self.stats[player_id]
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def rps(self, ctx: commands.Context, move: str = ''):
         """
         HuskieBot will play a game of Rock, Paper, Scissors with user
@@ -70,7 +70,11 @@ class RockPaperScissors(BaseCog):
         game = self.stats.get(ctx.author.id)
         if game:
             bot_move = random.choice(self.CHOICES)
-            result = 0 if human_move == bot_move else self.MATRIX[bot_move][human_move]
+            try:
+                result = 0 if human_move == bot_move else self.MATRIX[bot_move][human_move]
+            except KeyError:
+                await ctx.send("That is not a valid move")
+                return
             if result == 1:
                 field = 'user_score'
             elif result == -1:
@@ -95,7 +99,7 @@ class RockPaperScissors(BaseCog):
                                f'{human_move.capitalize()}\tvs.\t{bot_move.capitalize()}\n'
                                f'Current Score: {game["user_score"]}-{game["bot_score"]}-{game["ties"]}')
         else:
-            await ctx.send(f'We don\'t have a game going. Start a game by using the !{ctx.command} command')
+            await ctx.send(f'We don\'t have a game going. Start a game by using the "!{ctx.command} start" command')
 
     @rps.command(name='stop')
     async def rps_stop(self, ctx: commands.Context):

@@ -59,7 +59,7 @@ class Deepfry(BaseCog):
         r = img.split()[0]
         r = ImageEnhance.Contrast(r).enhance(2.0)
         r = ImageEnhance.Brightness(r).enhance(1.5)
-        r = ImageOps.colorize(r, Colors.RED, Colors.YELLOW)
+        r = ImageOps.colorize(r, Colors.RED.value, Colors.YELLOW.value)
         img = Image.blend(img, r, 0.75)
         img = ImageEnhance.Sharpness(img).enhance(100.0)
         return img
