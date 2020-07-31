@@ -1,4 +1,5 @@
 import datetime
+import logging
 import math
 import random
 
@@ -70,6 +71,8 @@ class RockPaperScissors(BaseCog):
         game = self.stats.get(ctx.author.id)
         if game:
             bot_move = random.choice(self.CHOICES)
+            logging.debug(f'Bot move: {bot_move}')
+            logging.debug(f'Human move: {human_move}')
             try:
                 result = 0 if human_move == bot_move else self.MATRIX[bot_move][human_move]
             except KeyError:
@@ -81,9 +84,9 @@ class RockPaperScissors(BaseCog):
                 field = 'bot_score'
             else:
                 field = 'ties'
+            game['history'].append({'bot': bot_move, 'user': human_move, 'result': result})
             game.update({
                 'turn': game['turn'] + 1,
-                'history': game['history'].append({'bot': bot_move, 'user': human_move, 'result': result}),
                 'last_played': datetime.datetime.utcnow(),
                 field: game[field] + 1
             })
@@ -118,6 +121,7 @@ class RockPaperScissors(BaseCog):
         """
         game = self.stats.get(ctx.author.id)
         if game:
+            logging.debug(f'Stopping game for {ctx.author.id}')
             self.stats.pop(ctx.author.id, None)
             await ctx.send(f"Thanks for rage quitting! Try not to be so salty next time")
         else:
@@ -145,5 +149,6 @@ class RockPaperScissors(BaseCog):
                 f"We are on turn {game['turn']} with a best of {game['best_of']}.\n"
                 f"The current score is {game['user_score']}-{game['bot_score']}-{game['ties']}")
         else:
+            logging.debug(f'Starting game for {ctx.author.id}')
             self._initialize(ctx, 3)
             await ctx.send('Lets play! Send me a move (!rps rock, !rps paper, !rps scissors)')
