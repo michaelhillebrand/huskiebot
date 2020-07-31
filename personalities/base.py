@@ -44,6 +44,7 @@ class Personality(object):
         (0, 'Dungons and Drags'),
         (3, 'the world burn'),
     )
+    quotes = ()
 
     """
     from discord.enums:
