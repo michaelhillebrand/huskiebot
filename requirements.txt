@@ -26,6 +26,6 @@ selenium==3.141.0
 six==1.12.0
 snowballstemmer==2.0.0
 typing-extensions==3.7.4.2
-urllib3==1.25.3
+urllib3==1.25.8
 websockets==8.1
 yarl==1.4.2
