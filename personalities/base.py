@@ -19,7 +19,7 @@ class Personality(object):
         'Outlook Good',
         'Yes',
         'Signs point to yes',
-        'Reply hasy, try again',
+        'Reply hazy, try again',
         'Ask again later',
         'Better not tell you now',
         'Cannot predict now',
@@ -43,6 +43,10 @@ class Personality(object):
         (0, 'the game'),
         (0, 'Dungons and Drags'),
         (3, 'the world burn'),
+    )
+    quotes = (
+        "I'm afraid I can't do that.",
+        "Beep Boop"
     )
 
     """
