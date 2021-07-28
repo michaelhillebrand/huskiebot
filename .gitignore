@@ -118,6 +118,7 @@ ffmpeg/
 
 # persistent storage
 settings.pkl
+tank_tactics.pkl
 
 # selenium web drivers
 /drivers
