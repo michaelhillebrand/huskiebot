@@ -10,7 +10,7 @@ idna==2.10
 idna-ssl==1.1.0
 mccabe==0.6.1
 multidict==4.7.6
-Pillow==8.2.0
+Pillow==9.0.1
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
 pycodestyle==2.5.0
